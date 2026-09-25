@@ -4,23 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ushakov AI</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
 <header class="topbar">
   <div class="brand">🧠 <span>Ushakov AI</span></div>
-  <button class="profile-btn" onclick="showPage('profile')">
-    Профиль
-  </button>
+  <button class="profile-btn" onclick="showPage('profile')">Профиль</button>
 </header>
 
 <main class="container">
 
   <section class="hero">
     <span class="badge">FREE</span>
-
     <p class="eyebrow">AI-ПОМОЩНИК ДЛЯ УЧЁБЫ</p>
 
     <h1>
@@ -34,16 +31,12 @@
     </p>
   </section>
 
-
   <nav class="tabs">
     <button onclick="showPage('home')">Главная</button>
     <button onclick="showPage('chat')">AI Чат</button>
     <button onclick="showPage('tools')">Инструменты</button>
     <button onclick="showPage('profile')">Профиль</button>
   </nav>
-
-
-  <!-- ГЛАВНАЯ -->
 
   <section id="home" class="page active">
 
@@ -81,23 +74,15 @@
 
     </div>
 
-
     <div class="pro-banner" onclick="showPage('pro')">
-
       <div>
-        <strong>⭐ Ushakov PRO</strong>
-        <br>
+        <strong>⭐ Ushakov PRO</strong><br>
         <span>Больше возможностей и лимитов</span>
       </div>
-
       <span class="arrow">→</span>
-
     </div>
 
   </section>
-
-
-  <!-- AI ЧАТ -->
 
   <section id="chat" class="page">
 
@@ -110,11 +95,9 @@
       </p>
 
       <div id="messages" class="messages">
-
         <div class="message ai">
           Привет! Я Ushakov AI. Напиши вопрос — я помогу разобраться. 🤖
         </div>
-
       </div>
 
       <div class="input-row">
@@ -126,7 +109,7 @@
           autocomplete="off"
         >
 
-        <button onclick="sendMessage()">➤</button>
+        <button id="sendButton" type="button">➤</button>
 
       </div>
 
@@ -134,24 +117,15 @@
 
   </section>
 
-
-  <!-- ФОТО -->
-
   <section id="photo" class="page">
 
     <div class="panel">
 
       <h2>📸 Решить по фото</h2>
 
-      <p class="muted">
-        Выбери фотографию задачи.
-      </p>
+      <p class="muted">Выбери фотографию задачи.</p>
 
-      <input
-        id="photoInput"
-        type="file"
-        accept="image/*"
-      >
+      <input id="photoInput" type="file" accept="image/*">
 
       <div id="photoResult" class="result">
         После загрузки здесь появится результат.
@@ -160,9 +134,6 @@
     </div>
 
   </section>
-
-
-  <!-- КОНСПЕКТ -->
 
   <section id="summary" class="page">
 
@@ -175,10 +146,7 @@
         placeholder="Вставь сюда текст..."
       ></textarea>
 
-      <button
-        class="primary"
-        onclick="makeSummary()"
-      >
+      <button id="summaryButton" class="primary" type="button">
         Сделать конспект
       </button>
 
@@ -187,9 +155,6 @@
     </div>
 
   </section>
-
-
-  <!-- ТЕСТ -->
 
   <section id="test" class="page">
 
@@ -203,10 +168,7 @@
         placeholder="Например: история Древнего Рима"
       >
 
-      <button
-        class="primary"
-        onclick="makeTest()"
-      >
+      <button id="testButton" class="primary" type="button">
         Создать вопросы
       </button>
 
@@ -215,9 +177,6 @@
     </div>
 
   </section>
-
-
-  <!-- ИЗОБРАЖЕНИЕ -->
 
   <section id="image" class="page">
 
@@ -231,10 +190,7 @@
         placeholder="Например: футуристический город ночью"
       >
 
-      <button
-        class="primary"
-        onclick="makeImage()"
-      >
+      <button id="imageButton" class="primary" type="button">
         Создать идею
       </button>
 
@@ -243,9 +199,6 @@
     </div>
 
   </section>
-
-
-  <!-- ПРОМОКОД -->
 
   <section id="promo" class="page">
 
@@ -259,10 +212,7 @@
         placeholder="Введи промокод"
       >
 
-      <button
-        class="primary"
-        onclick="activatePromo()"
-      >
+      <button id="promoButton" class="primary" type="button">
         Активировать
       </button>
 
@@ -271,9 +221,6 @@
     </div>
 
   </section>
-
-
-  <!-- PRO -->
 
   <section id="pro" class="page">
 
@@ -292,8 +239,9 @@
       </p>
 
       <button
+        id="profileFromPro"
         class="primary"
-        onclick="showPage('profile')"
+        type="button"
       >
         Открыть профиль
       </button>
@@ -301,9 +249,6 @@
     </div>
 
   </section>
-
-
-  <!-- ПРОФИЛЬ -->
 
   <section id="profile" class="page">
 
@@ -321,19 +266,13 @@
         <strong id="promoStatus">Не активированы</strong>
       </div>
 
-      <button
-        class="primary"
-        onclick="showPage('pro')"
-      >
+      <button id="getProButton" class="primary" type="button">
         ⭐ Получить PRO
       </button>
 
     </div>
 
   </section>
-
-
-  <!-- ИНСТРУМЕНТЫ -->
 
   <section id="tools" class="page">
 
@@ -365,13 +304,11 @@
 
 </main>
 
-
 <footer>
   Ushakov AI · prototype
 </footer>
 
-
-<script src="app.js"></script>
+<script src="./app.js?v=3"></script>
 
 </body>
 </html>
