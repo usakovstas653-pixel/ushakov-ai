@@ -1,227 +1,377 @@
-const API_URL = 'https://ushakov-ai-api123.usakovstas653.workers.dev';
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ushakov AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
+<body>
 
-  const page = document.getElementById(id);
+<header class="topbar">
+  <div class="brand">🧠 <span>Ushakov AI</span></div>
+  <button class="profile-btn" onclick="showPage('profile')">
+    Профиль
+  </button>
+</header>
 
-  if (page) {
-    page.classList.add('active');
-  }
+<main class="container">
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+  <section class="hero">
+    <span class="badge">FREE</span>
 
-function addMessage(text, type) {
-  const result = document.getElementById('messages');
+    <p class="eyebrow">AI-ПОМОЩНИК ДЛЯ УЧЁБЫ</p>
 
-  if (!result) return;
+    <h1>
+      Учись быстрее<br>
+      с <span>Ushakov AI</span>
+    </h1>
 
-  const div = document.createElement('div');
+    <p>
+      Чат, домашка по фото, конспекты, тесты и создание
+      изображений — всё в одном месте.
+    </p>
+  </section>
 
-  div.className = 'message ' + type;
-  div.textContent = text;
 
-  result.appendChild(div);
-  result.scrollTop = result.scrollHeight;
-}
+  <nav class="tabs">
+    <button onclick="showPage('home')">Главная</button>
+    <button onclick="showPage('chat')">AI Чат</button>
+    <button onclick="showPage('tools')">Инструменты</button>
+    <button onclick="showPage('profile')">Профиль</button>
+  </nav>
 
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const result = document.getElementById('messages');
 
-  if (!input || !result) return;
+  <!-- ГЛАВНАЯ -->
 
-  const text = input.value.trim();
+  <section id="home" class="page active">
 
-  if (!text) return;
+    <div class="grid">
 
-  addMessage(text, 'user');
+      <button class="card" onclick="showPage('chat')">
+        <b>💬 AI Чат</b>
+        <span>Задай вопрос и получи ответ</span>
+      </button>
 
-  input.value = '';
+      <button class="card" onclick="showPage('photo')">
+        <b>📸 Решить по фото</b>
+        <span>Загрузи задачу с камеры</span>
+      </button>
 
-  const thinking = document.createElement('div');
+      <button class="card" onclick="showPage('summary')">
+        <b>📝 Конспект</b>
+        <span>Сделай текст короче и понятнее</span>
+      </button>
 
-  thinking.className = 'message ai';
-  thinking.textContent = '🤖 Думаю...';
+      <button class="card" onclick="showPage('test')">
+        <b>🎯 Подготовка к тесту</b>
+        <span>Создай тренировочные вопросы</span>
+      </button>
 
-  result.appendChild(thinking);
-  result.scrollTop = result.scrollHeight;
+      <button class="card" onclick="showPage('image')">
+        <b>🎨 Создать изображение</b>
+        <span>Подготовь идею для картинки</span>
+      </button>
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: text
-      })
-    });
+      <button class="card" onclick="showPage('promo')">
+        <b>🎁 Промокод</b>
+        <span>Активируй код Ushakov AI</span>
+      </button>
 
-    const data = await response.json();
+    </div>
 
-    thinking.remove();
 
-    if (!response.ok) {
-      addMessage(
-        '❌ Ошибка AI: ' + (data.error || 'неизвестная ошибка'),
-        'ai'
-      );
-      return;
-    }
+    <div class="pro-banner" onclick="showPage('pro')">
 
-    addMessage(
-      data.answer || '🤖 AI не вернул ответ.',
-      'ai'
-    );
+      <div>
+        <strong>⭐ Ushakov PRO</strong>
+        <br>
+        <span>Больше возможностей и лимитов</span>
+      </div>
 
-  } catch (error) {
-    thinking.remove();
+      <span class="arrow">→</span>
 
-    addMessage(
-      '❌ Не удалось подключиться к Ushakov AI.',
-      'ai'
-    );
-  }
-}
+    </div>
 
-const chatInput = document.getElementById('chatInput');
+  </section>
 
-if (chatInput) {
-  chatInput.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      sendMessage();
-    }
-  });
-}
 
+  <!-- AI ЧАТ -->
 
-const photoInput = document.getElementById('photoInput');
+  <section id="chat" class="page">
 
-if (photoInput) {
-  photoInput.addEventListener('change', () => {
-    const result = document.getElementById('photoResult');
+    <div class="panel">
 
-    if (photoInput.files.length && result) {
-      result.textContent =
-        '📸 Фото получено! Настоящее распознавание подключим следующим этапом.';
-    }
-  });
-}
+      <h2>💬 AI Чат</h2>
 
+      <p class="muted">
+        Реальный AI-помощник Ushakov AI.
+      </p>
 
-function makeSummary() {
-  const input = document.getElementById('summaryInput');
-  const result = document.getElementById('summaryResult');
+      <div id="messages" class="messages">
 
-  if (!input || !result) return;
+        <div class="message ai">
+          Привет! Я Ushakov AI. Напиши вопрос — я помогу разобраться. 🤖
+        </div>
 
-  const text = input.value.trim();
+      </div>
 
-  if (!text) {
-    result.textContent = 'Сначала вставь текст.';
-    return;
-  }
+      <div class="input-row">
 
-  const sentences = text
-    .split(/(?<=[.!?])\s+/)
-    .filter(Boolean);
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Напиши сообщение..."
+          autocomplete="off"
+        >
 
-  const short = sentences
-    .slice(0, Math.max(1, Math.ceil(sentences.length / 3)))
-    .join(' ');
+        <button onclick="sendMessage()">➤</button>
 
-  result.textContent = '📝 Демо-конспект:\n\n' + short;
-}
+      </div>
 
+    </div>
 
-function makeTest() {
-  const input = document.getElementById('testInput');
-  const result = document.getElementById('testResult');
+  </section>
 
-  if (!input || !result) return;
 
-  const topic = input.value.trim();
+  <!-- ФОТО -->
 
-  if (!topic) {
-    result.textContent = 'Напиши тему.';
-    return;
-  }
+  <section id="photo" class="page">
 
-  result.innerHTML =
-    `<strong>🎯 Тренировка: ${escapeHtml(topic)}</strong><br><br>` +
-    '1. Назови главное понятие по теме.<br>' +
-    '2. Каковы основные причины или особенности?<br>' +
-    '3. Приведи пример.';
-}
+    <div class="panel">
 
+      <h2>📸 Решить по фото</h2>
 
-function makeImage() {
-  const input = document.getElementById('imageInput');
-  const result = document.getElementById('imageResult');
+      <p class="muted">
+        Выбери фотографию задачи.
+      </p>
 
-  if (!input || !result) return;
+      <input
+        id="photoInput"
+        type="file"
+        accept="image/*"
+      >
 
-  const prompt = input.value.trim();
+      <div id="photoResult" class="result">
+        После загрузки здесь появится результат.
+      </div>
 
-  result.textContent = prompt
-    ? '🎨 Идея принята: «' + prompt + '»'
-    : 'Напиши описание картинки.';
-}
+    </div>
 
+  </section>
 
-function activatePromo() {
-  const input = document.getElementById('promoInput');
-  const result = document.getElementById('promoResult');
 
-  if (!input || !result) return;
+  <!-- КОНСПЕКТ -->
 
-  const code = input.value.trim().toUpperCase();
+  <section id="summary" class="page">
 
-  const valid = ['WELCOME', 'PRO7', 'PRO30'];
+    <div class="panel">
 
-  if (valid.includes(code)) {
-    localStorage.setItem('ushakovPro', 'true');
+      <h2>📝 Конспект</h2>
 
-    const plan = document.getElementById('plan');
+      <textarea
+        id="summaryInput"
+        placeholder="Вставь сюда текст..."
+      ></textarea>
 
-    if (plan) {
-      plan.textContent = 'PRO';
-    }
+      <button
+        class="primary"
+        onclick="makeSummary()"
+      >
+        Сделать конспект
+      </button>
 
-    result.textContent =
-      '🔥 Промокод активирован! Тариф PRO включён.';
-  } else {
-    result.textContent = '❌ Такой промокод не найден.';
-  }
-}
+      <div id="summaryResult" class="result"></div>
 
+    </div>
 
-function escapeHtml(value) {
-  return value.replace(
-    /[&<>'"]/g,
-    char => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[char])
-  );
-}
+  </section>
 
 
-window.addEventListener('DOMContentLoaded', () => {
-  const plan = document.getElementById('plan');
+  <!-- ТЕСТ -->
 
-  if (
-    plan &&
-    localStorage.getItem('ushakovPro') === 'true'
-  ) {
-    plan.textContent = 'PRO';
-  }
-});
+  <section id="test" class="page">
+
+    <div class="panel">
+
+      <h2>🎯 Подготовка к тесту</h2>
+
+      <input
+        id="testInput"
+        type="text"
+        placeholder="Например: история Древнего Рима"
+      >
+
+      <button
+        class="primary"
+        onclick="makeTest()"
+      >
+        Создать вопросы
+      </button>
+
+      <div id="testResult" class="result"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ИЗОБРАЖЕНИЕ -->
+
+  <section id="image" class="page">
+
+    <div class="panel">
+
+      <h2>🎨 Создать изображение</h2>
+
+      <input
+        id="imageInput"
+        type="text"
+        placeholder="Например: футуристический город ночью"
+      >
+
+      <button
+        class="primary"
+        onclick="makeImage()"
+      >
+        Создать идею
+      </button>
+
+      <div id="imageResult" class="result"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ПРОМОКОД -->
+
+  <section id="promo" class="page">
+
+    <div class="panel">
+
+      <h2>🎁 Промокод</h2>
+
+      <input
+        id="promoInput"
+        type="text"
+        placeholder="Введи промокод"
+      >
+
+      <button
+        class="primary"
+        onclick="activatePromo()"
+      >
+        Активировать
+      </button>
+
+      <div id="promoResult" class="result"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PRO -->
+
+  <section id="pro" class="page">
+
+    <div class="panel center">
+
+      <div class="pro-icon">⭐</div>
+
+      <h2>Ushakov PRO</h2>
+
+      <p>
+        PRO можно выдавать вручную через администратора.
+      </p>
+
+      <p class="muted">
+        Для связи: Telegram добавим позже.
+      </p>
+
+      <button
+        class="primary"
+        onclick="showPage('profile')"
+      >
+        Открыть профиль
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ПРОФИЛЬ -->
+
+  <section id="profile" class="page">
+
+    <div class="panel">
+
+      <h2>👤 Профиль</h2>
+
+      <div class="profile-line">
+        <span>Тариф</span>
+        <strong id="plan">FREE</strong>
+      </div>
+
+      <div class="profile-line">
+        <span>Промокоды</span>
+        <strong id="promoStatus">Не активированы</strong>
+      </div>
+
+      <button
+        class="primary"
+        onclick="showPage('pro')"
+      >
+        ⭐ Получить PRO
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ИНСТРУМЕНТЫ -->
+
+  <section id="tools" class="page">
+
+    <div class="grid">
+
+      <button class="card" onclick="showPage('photo')">
+        <b>📸 Фото</b>
+        <span>Задача по изображению</span>
+      </button>
+
+      <button class="card" onclick="showPage('summary')">
+        <b>📝 Конспект</b>
+        <span>Краткое содержание текста</span>
+      </button>
+
+      <button class="card" onclick="showPage('test')">
+        <b>🎯 Тест</b>
+        <span>Тренировка перед контрольной</span>
+      </button>
+
+      <button class="card" onclick="showPage('image')">
+        <b>🎨 Изображение</b>
+        <span>Идея для генерации</span>
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<footer>
+  Ushakov AI · prototype
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
