@@ -1,32 +1,25 @@
 const API_URL = 'https://ushakov-ai-api123.usakovstas653.workers.dev';
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(function(page) {
-    page.classList.remove('active');
+  const pages = document.querySelectorAll('.page');
+
+  pages.forEach(function(page) {
+    page.style.display = 'none';
   });
 
-  const page = document.getElementById(id);
+  const selected = document.getElementById(id);
 
-  if (page) {
-    page.classList.add('active');
+  if (selected) {
+    selected.style.display = 'block';
   }
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
 }
-
 
 function addMessage(text, type) {
   const messages = document.getElementById('messages');
 
-  if (!messages) {
-    return;
-  }
+  if (!messages) return;
 
   const message = document.createElement('div');
-
   message.className = 'message ' + type;
   message.textContent = text;
 
@@ -34,38 +27,27 @@ function addMessage(text, type) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-
 async function sendMessage() {
-
   const input = document.getElementById('chatInput');
   const messages = document.getElementById('messages');
 
-  if (!input || !messages) {
-    return;
-  }
+  if (!input || !messages) return;
 
   const text = input.value.trim();
 
-  if (!text) {
-    return;
-  }
+  if (!text) return;
 
   addMessage(text, 'user');
 
   input.value = '';
 
   const thinking = document.createElement('div');
-
   thinking.className = 'message ai';
   thinking.textContent = '🤖 Думаю...';
 
   messages.appendChild(thinking);
 
-  messages.scrollTop = messages.scrollHeight;
-
-
   try {
-
     const response = await fetch(API_URL, {
       method: 'POST',
 
@@ -78,14 +60,11 @@ async function sendMessage() {
       })
     });
 
-
     const data = await response.json();
 
     thinking.remove();
 
-
     if (!response.ok) {
-
       addMessage(
         '❌ Ошибка AI: ' +
         (data.error || 'неизвестная ошибка'),
@@ -95,296 +74,240 @@ async function sendMessage() {
       return;
     }
 
-
     addMessage(
       data.answer || '🤖 AI не вернул ответ.',
       'ai'
     );
 
-
   } catch (error) {
-
     thinking.remove();
 
     addMessage(
       '❌ Не удалось подключиться к серверу Ushakov AI.',
       'ai'
     );
-
   }
 }
 
 
-function makeSummary() {
+/* =========================
+   PHOTO HOMEWORK
+========================= */
 
-  const input = document.getElementById('summaryInput');
-  const result = document.getElementById('summaryResult');
+async function prepareImage(file) {
+  return new Promise(function(resolve, reject) {
 
-  if (!input || !result) {
-    return;
-  }
+    const reader = new FileReader();
 
-  const text = input.value.trim();
+    reader.onload = function(event) {
 
-  if (!text) {
-    result.textContent = 'Сначала вставь текст.';
-    return;
-  }
+      const image = new Image();
 
-  const sentences = text
-    .split(/(?<=[.!?])\s+/)
-    .filter(Boolean);
+      image.onload = function() {
 
-  const short = sentences
-    .slice(0, Math.max(1, Math.ceil(sentences.length / 3)))
-    .join(' ');
+        const maxSize = 1600;
 
-  result.textContent =
-    '📝 Конспект:\n\n' + short;
+        let width = image.width;
+        let height = image.height;
+
+        if (width > maxSize || height > maxSize) {
+
+          if (width > height) {
+            height = Math.round(
+              height * maxSize / width
+            );
+
+            width = maxSize;
+
+          } else {
+            width = Math.round(
+              width * maxSize / height
+            );
+
+            height = maxSize;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          width,
+          height
+        );
+
+        const dataUrl = canvas.toDataURL(
+          'image/jpeg',
+          0.8
+        );
+
+        resolve(dataUrl);
+      };
+
+      image.onerror = reject;
+
+      image.src = event.target.result;
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
 }
 
 
-function makeTest() {
+async function solvePhoto() {
 
-  const input = document.getElementById('testInput');
-  const result = document.getElementById('testResult');
+  const input = document.getElementById('photoInput');
+  const preview = document.getElementById('photoPreview');
+  const status = document.getElementById('photoStatus');
+  const result = document.getElementById('photoResult');
 
-  if (!input || !result) {
+  if (!input || !input.files || !input.files[0]) {
     return;
   }
 
-  const topic = input.value.trim();
+  const file = input.files[0];
 
-  if (!topic) {
-    result.textContent = 'Напиши тему.';
-    return;
-  }
+  status.textContent = '⏳ Загружаю и анализирую фото...';
 
-  result.textContent =
-    '🎯 Тренировка: ' + topic +
-    '\n\n' +
-    '1. Назови главное понятие по теме.\n' +
-    '2. Назови основные причины или особенности.\n' +
-    '3. Приведи пример.';
-}
+  result.innerHTML = '';
 
+  try {
 
-function makeImage() {
+    const dataUrl = await prepareImage(file);
 
-  const input = document.getElementById('imageInput');
-  const result = document.getElementById('imageResult');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
 
-  if (!input || !result) {
-    return;
-  }
+    const base64 = dataUrl.split(',')[1];
 
-  const prompt = input.value.trim();
+    const response = await fetch(API_URL, {
 
-  if (!prompt) {
-    result.textContent = 'Напиши описание картинки.';
-    return;
-  }
+      method: 'POST',
 
-  result.textContent =
-    '🎨 Идея принята: «' + prompt + '»';
-}
+      headers: {
+        'Content-Type': 'application/json'
+      },
 
+      body: JSON.stringify({
 
-function activatePromo() {
+        message:
+          'На изображении домашнее задание. ' +
+          'Распознай условие задачи, реши её пошагово ' +
+          'и объясни ответ простыми словами. ' +
+          'Если часть задания не видна или фото нечёткое, ' +
+          'скажи об этом.',
 
-  const input = document.getElementById('promoInput');
-  const result = document.getElementById('promoResult');
-  const plan = document.getElementById('plan');
+        image: {
+          mimeType: 'image/jpeg',
+          data: base64
+        }
 
-  if (!input || !result) {
-    return;
-  }
+      })
+    });
 
-  const code = input.value.trim().toUpperCase();
+    const data = await response.json();
 
-  const validCodes = [
-    'WELCOME',
-    'PRO7',
-    'PRO30'
-  ];
+    if (!response.ok) {
 
-  if (validCodes.includes(code)) {
+      status.textContent =
+        '❌ Ошибка: ' +
+        (data.error || 'неизвестная ошибка');
 
-    localStorage.setItem(
-      'ushakovPro',
-      'true'
-    );
-
-    if (plan) {
-      plan.textContent = 'PRO';
+      return;
     }
 
-    result.textContent =
-      '🔥 Промокод активирован! Тариф PRO включён.';
+    status.textContent = '✅ Готово!';
 
-  } else {
+    const answer = document.createElement('div');
 
-    result.textContent =
-      '❌ Такой промокод не найден.';
+    answer.className = 'message ai';
 
+    answer.textContent =
+      data.answer ||
+      '🤖 AI не вернул решение.';
+
+    result.appendChild(answer);
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      '❌ Не удалось обработать фотографию.';
   }
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+/* =========================
+   START
+========================= */
 
-  const sendButton =
-    document.getElementById('sendButton');
+document.addEventListener(
+  'DOMContentLoaded',
+  function() {
 
-  const chatInput =
-    document.getElementById('chatInput');
+    const sendButton =
+      document.getElementById('sendButton');
+
+    const chatInput =
+      document.getElementById('chatInput');
+
+    const photoButton =
+      document.getElementById('photoButton');
+
+    const photoInput =
+      document.getElementById('photoInput');
 
 
-  if (sendButton) {
-
-    sendButton.addEventListener(
-      'click',
-      sendMessage
-    );
-
-  }
+    if (sendButton) {
+      sendButton.addEventListener(
+        'click',
+        sendMessage
+      );
+    }
 
 
-  if (chatInput) {
+    if (chatInput) {
 
-    chatInput.addEventListener(
-      'keydown',
-      function(event) {
+      chatInput.addEventListener(
+        'keydown',
+        function(event) {
 
-        if (event.key === 'Enter') {
+          if (event.key === 'Enter') {
 
-          event.preventDefault();
+            event.preventDefault();
 
-          sendMessage();
-
+            sendMessage();
+          }
         }
-
-      }
-    );
-
-  }
+      );
+    }
 
 
-  const photoInput =
-    document.getElementById('photoInput');
+    if (photoButton && photoInput) {
 
-
-  if (photoInput) {
-
-    photoInput.addEventListener(
-      'change',
-      function() {
-
-        const result =
-          document.getElementById('photoResult');
-
-        if (
-          photoInput.files.length &&
-          result
-        ) {
-
-          result.textContent =
-            '📸 Фото получено! ' +
-            'Распознавание подключим следующим этапом.';
-
+      photoButton.addEventListener(
+        'click',
+        function() {
+          photoInput.click();
         }
-
-      }
-    );
-
-  }
+      );
 
 
-  const summaryButton =
-    document.getElementById('summaryButton');
-
-  if (summaryButton) {
-    summaryButton.addEventListener(
-      'click',
-      makeSummary
-    );
-  }
-
-
-  const testButton =
-    document.getElementById('testButton');
-
-  if (testButton) {
-    testButton.addEventListener(
-      'click',
-      makeTest
-    );
-  }
-
-
-  const imageButton =
-    document.getElementById('imageButton');
-
-  if (imageButton) {
-    imageButton.addEventListener(
-      'click',
-      makeImage
-    );
-  }
-
-
-  const promoButton =
-    document.getElementById('promoButton');
-
-  if (promoButton) {
-    promoButton.addEventListener(
-      'click',
-      activatePromo
-    );
-  }
-
-
-  const profileFromPro =
-    document.getElementById('profileFromPro');
-
-  if (profileFromPro) {
-
-    profileFromPro.addEventListener(
-      'click',
-      function() {
-        showPage('profile');
-      }
-    );
+      photoInput.addEventListener(
+        'change',
+        solvePhoto
+      );
+    }
 
   }
-
-
-  const getProButton =
-    document.getElementById('getProButton');
-
-  if (getProButton) {
-
-    getProButton.addEventListener(
-      'click',
-      function() {
-        showPage('pro');
-      }
-    );
-
-  }
-
-
-  const plan =
-    document.getElementById('plan');
-
-
-  if (
-    plan &&
-    localStorage.getItem('ushakovPro') === 'true'
-  ) {
-
-    plan.textContent = 'PRO';
-
-  }
-
-});
+);
