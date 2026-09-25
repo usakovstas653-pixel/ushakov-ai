@@ -1,14 +1,20 @@
 const API_URL = 'https://ushakov-ai-api123.usakovstas653.workers.dev';
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+
   const page = document.getElementById(id);
-  if (page) page.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (page) {
+    page.classList.add('active');
+  }
 }
 
 function addMessage(text, type) {
-  const result = document.getElementById('chatResult');
+  const result = document.getElementById('messages');
+
   if (!result) return;
 
   const div = document.createElement('div');
@@ -21,26 +27,22 @@ function addMessage(text, type) {
 
 async function sendMessage() {
   const input = document.getElementById('chatInput');
-  const result = document.getElementById('chatResult');
+  const result = document.getElementById('messages');
 
   if (!input || !result) return;
 
   const text = input.value.trim();
+
   if (!text) return;
 
-  if (result.textContent.trim() === 'Здесь появится ответ.') {
-    result.textContent = '';
-  }
-
-  addMessage(text, 'user-message');
+  addMessage(text, 'user');
   input.value = '';
 
   const thinking = document.createElement('div');
-  thinking.className = 'message ai-message';
+  thinking.className = 'message ai';
   thinking.textContent = '🤖 Думаю...';
 
   result.appendChild(thinking);
-  result.scrollTop = result.scrollHeight;
 
   try {
     const response = await fetch(API_URL, {
@@ -60,35 +62,46 @@ async function sendMessage() {
     if (!response.ok) {
       addMessage(
         '❌ Ошибка AI: ' + (data.error || 'неизвестная ошибка'),
-        'ai-message'
+        'ai'
       );
       return;
     }
 
     addMessage(
       data.answer || '🤖 AI не вернул ответ.',
-      'ai-message'
+      'ai'
     );
 
   } catch (error) {
     thinking.remove();
 
     addMessage(
-      '❌ Не удалось подключиться к Ushakov AI.',
-      'ai-message'
+      '❌ Ошибка подключения к Ushakov AI.',
+      'ai'
     );
   }
+}
+
+const chatInput = document.getElementById('chatInput');
+
+if (chatInput) {
+  chatInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
 }
 
 const photoInput = document.getElementById('photoInput');
 
 if (photoInput) {
-  photoInput.addEventListener('change', () => {
+  photoInput.addEventListener('change', function() {
     const result = document.getElementById('photoResult');
 
     if (photoInput.files.length && result) {
       result.textContent =
-        '📸 Фото получено! Настоящее распознавание задания подключим следующим этапом.';
+        '📸 Фото получено! Распознавание подключим следующим этапом.';
     }
   });
 }
@@ -130,12 +143,11 @@ function makeTest() {
     return;
   }
 
-  result.innerHTML =
-    `<strong>🎯 Тренировка: ${escapeHtml(topic)}</strong><br><br>` +
-    '1. Назови главное понятие по теме.<br>' +
-    '2. Каковы основные причины или особенности?<br>' +
-    '3. Приведи пример.<br><br>' +
-    'Настоящую генерацию вопросов подключим вместе с AI.';
+  result.textContent =
+    '🎯 Тренировка: ' + topic +
+    '\n\n1. Назови главное понятие по теме.' +
+    '\n2. Каковы основные причины или особенности?' +
+    '\n3. Приведи пример.';
 }
 
 function makeImage() {
@@ -147,7 +159,7 @@ function makeImage() {
   const prompt = input.value.trim();
 
   result.textContent = prompt
-    ? '🎨 Промпт принят: «' + prompt + '». Настоящую генерацию изображения подключим следующим этапом.'
+    ? '🎨 Идея принята: «' + prompt + '»'
     : 'Напиши описание картинки.';
 }
 
@@ -158,6 +170,7 @@ function activatePromo() {
   if (!input || !result) return;
 
   const code = input.value.trim().toUpperCase();
+
   const valid = ['WELCOME', 'PRO7', 'PRO30'];
 
   if (valid.includes(code)) {
@@ -170,26 +183,13 @@ function activatePromo() {
     }
 
     result.textContent =
-      '🔥 Промокод активирован! Тариф PRO включён в этом браузере.';
+      '🔥 Промокод активирован! Тариф PRO включён.';
   } else {
     result.textContent = '❌ Такой промокод не найден.';
   }
 }
 
-function escapeHtml(value) {
-  return value.replace(
-    /[&<>'"]/g,
-    char => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[char])
-  );
-}
-
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', function() {
   const plan = document.getElementById('plan');
 
   if (
