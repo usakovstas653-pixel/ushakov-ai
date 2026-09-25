@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ushakov AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: white;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .card {
+            background: #181b24;
+            border: 1px solid #292e3a;
+            border-radius: 18px;
+            padding: 24px;
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .pro {
+            margin-top: 24px;
+            padding: 22px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #302b63, #6d5dfc);
+        }
+
+        .pro h2 {
+            margin-bottom: 8px;
+        }
+
+        .pro p {
+            color: #e5e7eb;
+        }
+
+        @media (max-width: 600px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">🧠 Ushakov AI</div>
+
+        <p class="subtitle">
+            Твой AI-помощник для учёбы
+        </p>
+
+        <div class="features">
+
+            <div class="card">
+                <div class="card-icon">💬</div>
+                <h2>AI Чат</h2>
+                <p>Задавай вопросы и общайся с искусственным интеллектом.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📸</div>
+                <h2>Решить по фото</h2>
+                <p>Загрузи фотографию задания и получи объяснение решения.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h2>Конспект</h2>
+                <p>Превращай большой текст в короткие и понятные заметки.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h2>Подготовка к тесту</h2>
+                <p>Создавай вопросы и тренируйся перед контрольной.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h2>Создать изображение</h2>
+                <p>Генерируй изображения для проектов и презентаций.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⭐</div>
+                <h2>Ushakov PRO</h2>
+                <p>Больше возможностей и расширенные лимиты.</p>
+            </div>
+
+        </div>
+
+        <div class="pro">
+            <h2>🚀 Ushakov PRO</h2>
+            <p>Расширенные возможности Ushakov AI — скоро здесь.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
