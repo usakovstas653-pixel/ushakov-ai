@@ -1,3 +1,4 @@
+alert("Ushakov AI JS работает!");
 const API_URL = 'https://ushakov-ai-api123.usakovstas653.workers.dev';
 
 function showPage(id) {
