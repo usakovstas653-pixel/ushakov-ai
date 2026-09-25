@@ -1,4 +1,3 @@
-alert("Ushakov AI JS работает!");
 const API_URL = 'https://ushakov-ai-api123.usakovstas653.workers.dev';
 
 function showPage(id) {
@@ -18,29 +17,38 @@ function showPage(id) {
   });
 }
 
+
 function addMessage(text, type) {
-  const result = document.getElementById('messages');
+  const messages = document.getElementById('messages');
 
-  if (!result) return;
+  if (!messages) {
+    return;
+  }
 
-  const div = document.createElement('div');
+  const message = document.createElement('div');
 
-  div.className = 'message ' + type;
-  div.textContent = text;
+  message.className = 'message ' + type;
+  message.textContent = text;
 
-  result.appendChild(div);
-  result.scrollTop = result.scrollHeight;
+  messages.appendChild(message);
+  messages.scrollTop = messages.scrollHeight;
 }
 
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const result = document.getElementById('messages');
 
-  if (!input || !result) return;
+async function sendMessage() {
+
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('messages');
+
+  if (!input || !messages) {
+    return;
+  }
 
   const text = input.value.trim();
 
-  if (!text) return;
+  if (!text) {
+    return;
+  }
 
   addMessage(text, 'user');
 
@@ -51,92 +59,70 @@ async function sendMessage() {
   thinking.className = 'message ai';
   thinking.textContent = '🤖 Думаю...';
 
-  result.appendChild(thinking);
+  messages.appendChild(thinking);
+
+  messages.scrollTop = messages.scrollHeight;
+
 
   try {
+
     const response = await fetch(API_URL, {
       method: 'POST',
+
       headers: {
         'Content-Type': 'application/json'
       },
+
       body: JSON.stringify({
         message: text
       })
     });
 
+
     const data = await response.json();
 
     thinking.remove();
 
+
     if (!response.ok) {
+
       addMessage(
         '❌ Ошибка AI: ' +
         (data.error || 'неизвестная ошибка'),
         'ai'
       );
+
       return;
     }
+
 
     addMessage(
       data.answer || '🤖 AI не вернул ответ.',
       'ai'
     );
 
+
   } catch (error) {
+
     thinking.remove();
 
     addMessage(
-      '❌ Не удалось подключиться к Ushakov AI.',
+      '❌ Не удалось подключиться к серверу Ushakov AI.',
       'ai'
     );
+
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-
-  const chatInput = document.getElementById('chatInput');
-
-  if (chatInput) {
-    chatInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
-  }
-
-  const photoInput = document.getElementById('photoInput');
-
-  if (photoInput) {
-    photoInput.addEventListener('change', function() {
-
-      const result = document.getElementById('photoResult');
-
-      if (photoInput.files.length && result) {
-        result.textContent =
-          '📸 Фото получено! Распознавание подключим следующим этапом.';
-      }
-
-    });
-  }
-
-  const plan = document.getElementById('plan');
-
-  if (
-    plan &&
-    localStorage.getItem('ushakovPro') === 'true'
-  ) {
-    plan.textContent = 'PRO';
-  }
-
-});
 
 function makeSummary() {
 
   const input = document.getElementById('summaryInput');
   const result = document.getElementById('summaryResult');
 
-  if (!input || !result) return;
+  if (!input || !result) {
+    return;
+  }
 
   const text = input.value.trim();
 
@@ -154,15 +140,18 @@ function makeSummary() {
     .join(' ');
 
   result.textContent =
-    '📝 Демо-конспект:\n\n' + short;
+    '📝 Конспект:\n\n' + short;
 }
+
 
 function makeTest() {
 
   const input = document.getElementById('testInput');
   const result = document.getElementById('testResult');
 
-  if (!input || !result) return;
+  if (!input || !result) {
+    return;
+  }
 
   const topic = input.value.trim();
 
@@ -175,16 +164,19 @@ function makeTest() {
     '🎯 Тренировка: ' + topic +
     '\n\n' +
     '1. Назови главное понятие по теме.\n' +
-    '2. Каковы основные причины или особенности?\n' +
+    '2. Назови основные причины или особенности.\n' +
     '3. Приведи пример.';
 }
+
 
 function makeImage() {
 
   const input = document.getElementById('imageInput');
   const result = document.getElementById('imageResult');
 
-  if (!input || !result) return;
+  if (!input || !result) {
+    return;
+  }
 
   const prompt = input.value.trim();
 
@@ -197,29 +189,31 @@ function makeImage() {
     '🎨 Идея принята: «' + prompt + '»';
 }
 
+
 function activatePromo() {
 
   const input = document.getElementById('promoInput');
   const result = document.getElementById('promoResult');
+  const plan = document.getElementById('plan');
 
-  if (!input || !result) return;
+  if (!input || !result) {
+    return;
+  }
 
   const code = input.value.trim().toUpperCase();
 
-  const valid = [
+  const validCodes = [
     'WELCOME',
     'PRO7',
     'PRO30'
   ];
 
-  if (valid.includes(code)) {
+  if (validCodes.includes(code)) {
 
     localStorage.setItem(
       'ushakovPro',
       'true'
     );
-
-    const plan = document.getElementById('plan');
 
     if (plan) {
       plan.textContent = 'PRO';
@@ -235,3 +229,162 @@ function activatePromo() {
 
   }
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  const sendButton =
+    document.getElementById('sendButton');
+
+  const chatInput =
+    document.getElementById('chatInput');
+
+
+  if (sendButton) {
+
+    sendButton.addEventListener(
+      'click',
+      sendMessage
+    );
+
+  }
+
+
+  if (chatInput) {
+
+    chatInput.addEventListener(
+      'keydown',
+      function(event) {
+
+        if (event.key === 'Enter') {
+
+          event.preventDefault();
+
+          sendMessage();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  const photoInput =
+    document.getElementById('photoInput');
+
+
+  if (photoInput) {
+
+    photoInput.addEventListener(
+      'change',
+      function() {
+
+        const result =
+          document.getElementById('photoResult');
+
+        if (
+          photoInput.files.length &&
+          result
+        ) {
+
+          result.textContent =
+            '📸 Фото получено! ' +
+            'Распознавание подключим следующим этапом.';
+
+        }
+
+      }
+    );
+
+  }
+
+
+  const summaryButton =
+    document.getElementById('summaryButton');
+
+  if (summaryButton) {
+    summaryButton.addEventListener(
+      'click',
+      makeSummary
+    );
+  }
+
+
+  const testButton =
+    document.getElementById('testButton');
+
+  if (testButton) {
+    testButton.addEventListener(
+      'click',
+      makeTest
+    );
+  }
+
+
+  const imageButton =
+    document.getElementById('imageButton');
+
+  if (imageButton) {
+    imageButton.addEventListener(
+      'click',
+      makeImage
+    );
+  }
+
+
+  const promoButton =
+    document.getElementById('promoButton');
+
+  if (promoButton) {
+    promoButton.addEventListener(
+      'click',
+      activatePromo
+    );
+  }
+
+
+  const profileFromPro =
+    document.getElementById('profileFromPro');
+
+  if (profileFromPro) {
+
+    profileFromPro.addEventListener(
+      'click',
+      function() {
+        showPage('profile');
+      }
+    );
+
+  }
+
+
+  const getProButton =
+    document.getElementById('getProButton');
+
+  if (getProButton) {
+
+    getProButton.addEventListener(
+      'click',
+      function() {
+        showPage('pro');
+      }
+    );
+
+  }
+
+
+  const plan =
+    document.getElementById('plan');
+
+
+  if (
+    plan &&
+    localStorage.getItem('ushakovPro') === 'true'
+  ) {
+
+    plan.textContent = 'PRO';
+
+  }
+
+});
