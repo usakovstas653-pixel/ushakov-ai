@@ -1,946 +1,603 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Ushakov AI</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: Inter, Arial, sans-serif;
-            color: #f5f7ff;
-            background:
-                radial-gradient(circle at 10% 0%, rgba(91, 76, 255, .22), transparent 30%),
-                radial-gradient(circle at 90% 10%, rgba(0, 200, 255, .12), transparent 28%),
-                #070a12;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        /* HEADER */
-
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            height: 74px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 6%;
-            background: rgba(7, 10, 18, .78);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-
-        .brand-logo {
-            width: 42px;
-            height: 42px;
-            display: grid;
-            place-items: center;
-            border-radius: 13px;
-            font-size: 21px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #7567ff, #4a8cff);
-            box-shadow: 0 8px 30px rgba(91,76,255,.35);
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        .brand-subtitle {
-            margin-top: 2px;
-            font-size: 11px;
-            color: #8c95aa;
-        }
-
-        .profile-btn {
-            padding: 10px 17px;
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 12px;
-            color: #fff;
-            background: rgba(255,255,255,.06);
-            transition: .2s;
-        }
-
-        .profile-btn:hover {
-            background: rgba(255,255,255,.11);
-            transform: translateY(-1px);
-        }
-
-        /* MAIN */
-
-        .container {
-            width: min(1100px, 92%);
-            margin: 0 auto;
-            padding: 55px 0 80px;
-        }
-
-        .page {
-            display: none;
-            animation: fadeIn .3s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* HERO */
-
-        .hero {
-            max-width: 800px;
-            margin: 35px auto 45px;
-            text-align: center;
-        }
-
-        .badge {
-            display: inline-flex;
-            padding: 8px 13px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(117,103,255,.3);
-            border-radius: 999px;
-            color: #b9b3ff;
-            background: rgba(117,103,255,.1);
-            font-size: 13px;
-        }
-
-        .hero h1 {
-            font-size: clamp(42px, 7vw, 76px);
-            line-height: .98;
-            letter-spacing: -3px;
-            margin-bottom: 24px;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(90deg, #887aff, #5db7ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .hero p {
-            max-width: 650px;
-            margin: auto;
-            color: #9aa4b8;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-
-        /* TABS */
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 35px;
-        }
-
-        .tabs button {
-            padding: 12px 18px;
-            color: #dfe4f3;
-            background: rgba(255,255,255,.055);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 13px;
-            transition: .2s;
-        }
-
-        .tabs button:hover {
-            background: rgba(117,103,255,.16);
-            border-color: rgba(117,103,255,.35);
-            transform: translateY(-2px);
-        }
-
-        /* CARDS */
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .card {
-            padding: 26px;
-            min-height: 180px;
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 22px;
-            background: linear-gradient(
-                145deg,
-                rgba(23,30,48,.9),
-                rgba(12,17,29,.9)
-            );
-            cursor: pointer;
-            transition: .25s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(117,103,255,.35);
-            box-shadow: 0 20px 50px rgba(0,0,0,.25);
-        }
-
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            margin-bottom: 22px;
-            border-radius: 14px;
-            background: rgba(117,103,255,.12);
-            font-size: 23px;
-        }
-
-        .card h3 {
-            margin-bottom: 9px;
-            font-size: 19px;
-        }
-
-        .card p {
-            color: #8993a8;
-            line-height: 1.5;
-            font-size: 14px;
-        }
-
-        /* PRO */
-
-        .pro-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-top: 18px;
-            padding: 25px;
-            border: 1px solid rgba(117,103,255,.25);
-            border-radius: 22px;
-            background:
-                linear-gradient(
-                    110deg,
-                    rgba(117,103,255,.16),
-                    rgba(55,117,255,.07)
-                );
-        }
-
-        .pro-banner strong {
-            font-size: 18px;
-        }
-
-        .pro-banner p {
-            margin-top: 6px;
-            color: #929bb0;
-        }
-
-        .pro-banner button,
-        .primary {
-            border: 0;
-            border-radius: 13px;
-            padding: 13px 19px;
-            color: white;
-            font-weight: 700;
-            background: linear-gradient(135deg, #7567ff, #4b8cff);
-            box-shadow: 0 10px 30px rgba(91,76,255,.25);
-            transition: .2s;
-        }
-
-        .pro-banner button:hover,
-        .primary:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.08);
-        }
-
-        /* PANELS */
-
-        .panel {
-            max-width: 850px;
-            margin: 20px auto;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 25px;
-            background: rgba(14,20,33,.88);
-            box-shadow: 0 25px 70px rgba(0,0,0,.22);
-        }
-
-        .panel h2 {
-            margin-bottom: 10px;
-            font-size: 30px;
-        }
-
-        .panel > p {
-            margin-bottom: 25px;
-            color: #909aae;
-            line-height: 1.5;
-        }
-
-        .back-btn {
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            color: #aab3c7;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 11px;
-        }
-
-        .back-btn:hover {
-            color: #fff;
-            background: rgba(255,255,255,.05);
-        }
-
-        /* INPUTS */
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            color: #fff;
-            background: #090e19;
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 14px;
-            outline: none;
-            transition: .2s;
-        }
-
-        input {
-            height: 50px;
-            padding: 0 15px;
-        }
-
-        textarea {
-            min-height: 180px;
-            padding: 15px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-
-        select {
-            height: 50px;
-            padding: 0 14px;
-            margin-top: 12px;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: rgba(117,103,255,.65);
-            box-shadow: 0 0 0 4px rgba(117,103,255,.08);
-        }
-
-        .primary {
-            margin-top: 14px;
-        }
-
-        /* CHAT */
-
-        .messages {
-            min-height: 350px;
-            max-height: 500px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 16px;
-            background: rgba(0,0,0,.16);
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 13px 15px;
-            margin-bottom: 10px;
-            border-radius: 15px;
-            line-height: 1.5;
-            white-space: normal;
-        }
-
-        .user-message {
-            margin-left: auto;
-            background: linear-gradient(135deg, #6357d8, #4d75d8);
-        }
-
-        .ai-message {
-            background: rgba(255,255,255,.065);
-            color: #e1e6f2;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-row input {
-            flex: 1;
-        }
-
-        .input-row .primary {
-            margin-top: 0;
-            white-space: nowrap;
-        }
-
-        /* PHOTO */
-
-        #photoInput {
-            padding: 12px;
-            height: auto;
-        }
-
-        #photoPreview {
-            width: 100%;
-            max-height: 450px;
-            object-fit: contain;
-            margin-top: 18px;
-            background: #05070c;
-        }
-
-        /* RESULTS */
-
-        #photoStatus,
-        #summaryStatus,
-        #testStatus,
-        #imageStatus {
-            min-height: 25px;
-            margin-top: 14px;
-            color: #929bb0;
-        }
-
-        .result-box {
-            min-height: 40px;
-            margin-top: 18px;
-            padding: 18px;
-            border-radius: 15px;
-            background: rgba(255,255,255,.045);
-            color: #dce2ef;
-            line-height: 1.65;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-        }
-
-        #imageResult img {
-            display: block;
-            width: 100%;
-            max-width: 700px;
-            margin: 18px auto 0;
-            border-radius: 18px;
-        }
-
-        /* PROFILE */
-
-        .profile-card {
-            padding: 30px;
-            text-align: center;
-            border-radius: 20px;
-            background: rgba(255,255,255,.04);
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            display: grid;
-            place-items: center;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #7567ff, #4b8cff);
-        }
-
-        .profile-card h3 {
-            margin-bottom: 8px;
-        }
-
-        .profile-card p {
-            color: #8f99ad;
-        }
-
-        .pro-features {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .pro-features p {
-            padding: 14px;
-            border-radius: 12px;
-            color: #dce2ef;
-            background: rgba(255,255,255,.04);
-        }
-
-        /* FOOTER */
-
-        footer {
-            padding: 30px 20px;
-            text-align: center;
-            color: #687186;
-            border-top: 1px solid rgba(255,255,255,.06);
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 700px) {
-
-            .topbar {
-                padding: 0 4%;
-            }
-
-            .container {
-                width: 92%;
-                padding-top: 30px;
-            }
-
-            .hero {
-                margin-top: 20px;
-            }
-
-            .hero h1 {
-                font-size: 46px;
-                letter-spacing: -2px;
-            }
-
-            .hero p {
-                font-size: 15px;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                justify-content: stretch;
-            }
-
-            .tabs button {
-                flex: 1;
-                min-width: 110px;
-            }
-
-            .panel {
-                padding: 20px;
-                border-radius: 20px;
-            }
-
-            .panel h2 {
-                font-size: 25px;
-            }
-
-            .input-row {
-                flex-direction: column;
-            }
-
-            .input-row .primary {
-                width: 100%;
-            }
-
-            .pro-banner {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .pro-banner button {
-                width: 100%;
-            }
-
-            .message {
-                max-width: 92%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ushakov AI</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, sans-serif;
+  background: #0b1020;
+  color: white;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #111936;
+  border-bottom: 1px solid #29345f;
+  padding: 14px 16px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #7c9cff;
+}
+
+.nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-top: 12px;
+  padding-bottom: 3px;
+}
+
+.nav button {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #202a4d;
+  color: white;
+  font-size: 14px;
+}
+
+.nav button:active {
+  transform: scale(0.96);
+}
+
+.nav button.active {
+  background: #536dfe;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 24px 16px 50px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.hero {
+  padding: 35px 0;
+}
+
+h1 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 15px;
+}
+
+h2 {
+  font-size: 28px;
+  margin-top: 0;
+}
+
+p {
+  color: #b9c2df;
+  line-height: 1.6;
+}
+
+.card {
+  background: #151e3b;
+  border: 1px solid #29345f;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 15px 0;
+}
+
+.big-button {
+  width: 100%;
+  padding: 17px;
+  border-radius: 13px;
+  background: #536dfe;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.big-button:active {
+  transform: scale(0.98);
+}
+
+textarea,
+input {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 12px;
+  border: 1px solid #36436f;
+  background: #0d142a;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+textarea:focus,
+input:focus {
+  border-color: #6f87ff;
+}
+
+.result {
+  white-space: pre-wrap;
+  background: #0d142a;
+  border: 1px solid #29345f;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 15px;
+  min-height: 60px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.feature {
+  background: #151e3b;
+  border: 1px solid #29345f;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.feature button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #29365f;
+  color: white;
+}
+
+.status {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  z-index: 9999;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: #18234a;
+  border: 1px solid #536dfe;
+  text-align: center;
+  display: none;
+}
+
+.status.show {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 32px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 </head>
-
 
 <body>
 
-<header class="topbar">
+<header class="header">
+  <div class="logo">⚡ Ushakov AI</div>
 
-    <div class="brand" onclick="showPage('home')">
-
-        <div class="brand-logo">
-            U
-        </div>
-
-        <div>
-            <div class="brand-title">
-                Ushakov AI
-            </div>
-
-            <div class="brand-subtitle">
-                Твой школьный AI
-            </div>
-        </div>
-
-    </div>
-
-
-    <button
-        class="profile-btn"
-        onclick="showPage('profile')"
-    >
-        Профиль
-    </button>
-
+  <nav class="nav">
+    <button onclick="showPage('home', this)" class="active">Главная</button>
+    <button onclick="showPage('chat', this)">Чат</button>
+    <button onclick="showPage('photo', this)">Фото</button>
+    <button onclick="showPage('summary', this)">Конспект</button>
+    <button onclick="showPage('tests', this)">Тесты</button>
+    <button onclick="showPage('image', this)">Картинки</button>
+    <button onclick="showPage('profile', this)">Профиль</button>
+  </nav>
 </header>
-
 
 <main class="container">
 
+  <!-- ГЛАВНАЯ -->
+  <section id="home" class="page active">
+    <div class="hero">
+      <h1>Твой школьный<br>AI-помощник 🚀</h1>
 
-    <!-- HOME -->
+      <p>
+        Ushakov AI помогает с домашкой, объясняет темы,
+        работает с фотографиями и создаёт конспекты.
+      </p>
 
-    <section id="home" class="page active">
+      <button class="big-button" onclick="showPage('chat')">
+        💬 Открыть AI-чат
+      </button>
+    </div>
 
-        <div class="hero">
+    <div class="feature-grid">
 
-            <div class="badge">
-                ✦ AI для учёбы
-            </div>
-
-            <h1>
-                Учись быстрее<br>
-                с <span>Ushakov AI</span>
-            </h1>
-
-            <p>
-                Решай задачи, разбирай фотографии,
-                создавай конспекты и готовься к контрольным
-                с помощью искусственного интеллекта.
-            </p>
-
-        </div>
-
-
-        <div class="tabs">
-
-            <button onclick="showPage('chat')">
-                💬 Чат
-            </button>
-
-            <button onclick="showPage('photo')">
-                📷 Фото
-            </button>
-
-            <button onclick="showPage('summary')">
-                📝 Конспект
-            </button>
-
-            <button onclick="showPage('tests')">
-                🧠 Тесты
-            </button>
-
-            <button onclick="showPage('image')">
-                🎨 Картинка
-            </button>
-
-        </div>
-
-
-        <div class="grid">
-
-            <div
-                class="card"
-                onclick="showPage('chat')"
-            >
-
-                <div class="card-icon">
-                    💬
-                </div>
-
-                <h3>
-                    AI Чат
-                </h3>
-
-                <p>
-                    Задавай вопросы по школьным предметам
-                    и получай понятные объяснения.
-                </p>
-
-            </div>
-
-
-            <div
-                class="card"
-                onclick="showPage('photo')"
-            >
-
-                <div class="card-icon">
-                    📷
-                </div>
-
-                <h3>
-                    Решить по фото
-                </h3>
-
-                <p>
-                    Загрузи фотографию задания
-                    и получи пошаговое решение.
-                </p>
-
-            </div>
-
-
-            <div
-                class="card"
-                onclick="showPage('summary')"
-            >
-
-                <div class="card-icon">
-                    📝
-                </div>
-
-                <h3>
-                    Конспект
-                </h3>
-
-                <p>
-                    Преврати большой текст
-                    в короткий и понятный конспект.
-                </p>
-
-            </div>
-
-
-            <div
-                class="card"
-                onclick="showPage('tests')"
-            >
-
-                <div class="card-icon">
-                    🧠
-                </div>
-
-                <h3>
-                    Тесты
-                </h3>
-
-                <p>
-                    Создавай тренировочные тесты
-                    по любой школьной теме.
-                </p>
-
-            </div>
-
-
-            <div
-                class="card"
-                onclick="showPage('image')"
-            >
-
-                <div class="card-icon">
-                    🎨
-                </div>
-
-                <h3>
-                    Создать картинку
-                </h3>
-
-                <p>
-                    Опиши изображение,
-                    которое хочешь создать.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="pro-banner">
-
-            <div>
-
-                <strong>
-                    ⭐ Ushakov AI PRO
-                </strong>
-
-                <p>
-                    Больше возможностей для учёбы.
-                </p>
-
-            </div>
-
-            <button onclick="showPage('pro')">
-                Подробнее
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- CHAT -->
-
-    <section id="chat" class="page">
-
-        <button
-            class="back-btn"
-            onclick="showPage('home')"
-        >
-            ← Назад
+      <div class="feature">
+        <h3>💬 AI-чат</h3>
+        <p>Задай любой школьный вопрос.</p>
+        <button onclick="showPage('chat')">
+          Открыть
         </button>
+      </div>
 
-        <div class="panel">
-
-            <h2>
-                💬 AI Чат
-            </h2>
-
-            <p>
-                Задай вопрос Ushakov AI.
-            </p>
-
-
-            <div id="messages" class="messages"></div>
-
-
-            <div class="input-row">
-
-                <input
-                    id="chatInput"
-                    type="text"
-                    placeholder="Например: объясни теорему Пифагора"
-                >
-
-                <button
-                    id="sendButton"
-                    class="primary"
-                    type="button"
-                >
-                    Отправить
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- PHOTO -->
-
-    <section id="photo" class="page">
-
-        <button
-            class="back-btn"
-            onclick="showPage('home')"
-        >
-            ← Назад
+      <div class="feature">
+        <h3>📷 Фото</h3>
+        <p>Отправь фотографию задания.</p>
+        <button onclick="showPage('photo')">
+          Открыть
         </button>
+      </div>
 
-        <div class="panel">
-
-            <h2>
-                📷 Решить по фото
-            </h2>
-
-            <p>
-                Загрузи фотографию задания.
-            </p>
-
-
-            <input
-                id="photoInput"
-                type="file"
-                accept="image/*"
-            >
-
-
-            <button
-                id="photoButton"
-                class="primary"
-                type="button"
-            >
-                Решить задачу
-            </button>
-
-
-            <div id="photoStatus"></div>
-
-
-            <img
-                id="photoPreview"
-                style="display:none;"
-                alt="Предпросмотр"
-            >
-
-
-            <div
-                id="photoResult"
-                class="result-box"
-            ></div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- SUMMARY -->
-
-    <section id="summary" class="page">
-
-        <button
-            class="back-btn"
-            onclick="showPage('home')"
-        >
-            ← Назад
+      <div class="feature">
+        <h3>📝 Конспект</h3>
+        <p>Преврати текст в краткий конспект.</p>
+        <button onclick="showPage('summary')">
+          Открыть
         </button>
+      </div>
 
-        <div class="panel">
+      <div class="feature">
+        <h3>🧠 Тесты</h3>
+        <p>Создавай тесты по школьным темам.</p>
+        <button onclick="showPage('tests')">
+          Открыть
+        </button>
+      </div>
 
-            <h2>
-                📝 Конспект
-            </h2>
-
-            <p>
-                Вставь текст, а AI сделает
-                понятный конспект.
-            </p>
-
-
-            <textarea
-                id="summaryInput"
-                placeholder="Вставь сюда текст учебника, статьи или параграфа..."
-            ></textarea>
+    </div>
+  </section>
 
 
-            <button
-                id="summaryButton"
-                class="primary"
-                type="button"
-           
+  <!-- ЧАТ -->
+  <section id="chat" class="page">
+    <h2>💬 AI-чат</h2>
+
+    <div class="card">
+      <p>Напиши свой вопрос:</p>
+
+      <textarea id="chatInput"
+        placeholder="Например: объясни теорему Пифагора простыми словами"></textarea>
+
+      <button class="big-button" onclick="sendChat()">
+        🚀 Спросить AI
+      </button>
+
+      <div id="chatResult" class="result">
+        Здесь появится ответ.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ФОТО -->
+  <section id="photo" class="page">
+    <h2>📷 Решение по фото</h2>
+
+    <div class="card">
+
+      <input
+        id="photoInput"
+        type="file"
+        accept="image/*"
+      >
+
+      <button class="big-button" onclick="photoTest()">
+        🔍 Проверить кнопку
+      </button>
+
+      <div id="photoResult" class="result">
+        Выбери фотографию задания.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- КОНСПЕКТ -->
+  <section id="summary" class="page">
+    <h2>📝 Конспект</h2>
+
+    <div class="card">
+
+      <textarea
+        id="summaryInput"
+        placeholder="Вставь сюда текст урока..."
+      ></textarea>
+
+      <button class="big-button" onclick="makeSummary()">
+        ✨ Сделать конспект
+      </button>
+
+      <div id="summaryResult" class="result">
+        Здесь появится конспект.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ТЕСТЫ -->
+  <section id="tests" class="page">
+    <h2>🧠 Тесты</h2>
+
+    <div class="card">
+
+      <input
+        id="testInput"
+        placeholder="Например: Древняя Русь"
+      >
+
+      <button class="big-button" onclick="createTest()">
+        🎯 Создать тест
+      </button>
+
+      <div id="testResult" class="result">
+        Здесь появится тест.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- КАРТИНКИ -->
+  <section id="image" class="page">
+    <h2>🎨 Генерация картинок</h2>
+
+    <div class="card">
+
+      <textarea
+        id="imageInput"
+        placeholder="Например: средневековый замок на фоне гор, реалистично"
+      ></textarea>
+
+      <button class="big-button" onclick="generateImage()">
+        🎨 Создать картинку
+      </button>
+
+      <div id="imageResult" class="result">
+        Здесь появится результат.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ПРОФИЛЬ -->
+  <section id="profile" class="page">
+    <h2>👤 Профиль</h2>
+
+    <div class="card">
+      <h3>Ushakov AI</h3>
+      <p>Твой школьный AI-помощник.</p>
+
+      <button class="big-button" onclick="showMessage('Профиль работает! ✅')">
+        Проверить кнопку
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<div id="status" class="status"></div>
+
+
+<script>
+
+/* =========================
+   НАВИГАЦИЯ
+========================= */
+
+function showPage(pageId, button) {
+
+  // скрываем все страницы
+  var pages = document.querySelectorAll('.page');
+
+  pages.forEach(function(page) {
+    page.classList.remove('active');
+  });
+
+  // показываем нужную
+  var page = document.getElementById(pageId);
+
+  if (page) {
+    page.classList.add('active');
+  }
+
+  // меняем активную кнопку
+  var buttons = document.querySelectorAll('.nav button');
+
+  buttons.forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+
+  if (button) {
+    button.classList.add('active');
+  }
+
+  window.scrollTo(0, 0);
+}
+
+
+/* =========================
+   СООБЩЕНИЯ
+========================= */
+
+function showMessage(message) {
+
+  var status = document.getElementById('status');
+
+  status.textContent = message;
+  status.classList.add('show');
+
+  setTimeout(function() {
+    status.classList.remove('show');
+  }, 2500);
+}
+
+
+/* =========================
+   ЧАТ
+========================= */
+
+function sendChat() {
+
+  var input = document.getElementById('chatInput');
+  var result = document.getElementById('chatResult');
+
+  if (!input.value.trim()) {
+    showMessage('Напиши вопрос сначала 👆');
+    return;
+  }
+
+  result.textContent =
+    'Кнопка работает ✅\n\n' +
+    'Вопрос: ' + input.value +
+    '\n\nПодключение AI добавим следующим шагом.';
+
+  showMessage('Кнопка чата работает ✅');
+}
+
+
+/* =========================
+   ФОТО
+========================= */
+
+function photoTest() {
+
+  var input = document.getElementById('photoInput');
+  var result = document.getElementById('photoResult');
+
+  if (!input.files || !input.files.length) {
+    showMessage('Сначала выбери фотографию 📷');
+    return;
+  }
+
+  result.textContent =
+    'Кнопка работает ✅\n\n' +
+    'Файл: ' + input.files[0].name;
+
+  showMessage('Фото выбрано ✅');
+}
+
+
+/* =========================
+   КОНСПЕКТ
+========================= */
+
+function makeSummary() {
+
+  var input = document.getElementById('summaryInput');
+  var result = document.getElementById('summaryResult');
+
+  if (!input.value.trim()) {
+    showMessage('Вставь текст для конспекта 👆');
+    return;
+  }
+
+  result.textContent =
+    'Кнопка работает ✅\n\n' +
+    'Текст принят.\n\n' +
+    'AI-конспект подключим после проверки интерфейса.';
+
+  showMessage('Конспект работает ✅');
+}
+
+
+/* =========================
+   ТЕСТ
+========================= */
+
+function createTest() {
+
+  var input = document.getElementById('testInput');
+  var result = document.getElementById('testResult');
+
+  if (!input.value.trim()) {
+    showMessage('Напиши тему теста 👆');
+    return;
+  }
+
+  result.textContent =
+    'Кнопка работает ✅\n\n' +
+    'Тема: ' + input.value +
+    '\n\nГенератор тестов подключим после проверки кнопок.';
+
+  showMessage('Тест работает ✅');
+}
+
+
+/* =========================
+   КАРТИНКА
+========================= */
+
+function generateImage() {
+
+  var input = document.getElementById('imageInput');
+  var result = document.getElementById('imageResult');
+
+  if (!input.value.trim()) {
+    showMessage('Напиши описание картинки 👆');
+    return;
+  }
+
+  result.textContent =
+    'Кнопка работает ✅\n\n' +
+    'Запрос: ' + input.value +
+    '\n\nГенерацию подключим следующим шагом.';
+
+  showMessage('Кнопка работает ✅');
+}
+
+
+/* =========================
+   ПРОВЕРКА
+========================= */
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  showMessage('Ushakov AI загружен ✅');
+
+});
+
+</script>
+
+</body>
+</html>
