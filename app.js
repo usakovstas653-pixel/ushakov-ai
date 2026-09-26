@@ -1,5 +1,4 @@
-const API_URL =
-  "https://ushakov-ai-api123.usakovstas653.workers.dev";
+const API_URL = "https://ushakov-ai-api123.usakovstas653.workers.dev";
 
 document.addEventListener("DOMContentLoaded", () => {
   initNavigation();
@@ -10,11 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initImage();
   initProfile();
 });
-
-
-// =========================
-// НАВИГАЦИЯ
-// =========================
 
 function initNavigation() {
   document.querySelectorAll("[data-page]").forEach(button => {
@@ -33,14 +27,9 @@ function openPage(pageName) {
 
   if (page) {
     page.classList.add("active");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo(0, 0);
   }
 }
-
-
-// =========================
-// ОБЩИЙ API
-// =========================
 
 async function apiRequest(body) {
   const response = await fetch(API_URL, {
@@ -52,7 +41,7 @@ async function apiRequest(body) {
   });
 
   if (!response.ok) {
-    throw new Error("Ошибка сервера: " + response.status);
+    throw new Error("HTTP " + response.status);
   }
 
   return await response.json();
@@ -61,9 +50,7 @@ async function apiRequest(body) {
 function getText(data) {
   if (!data) return "Пустой ответ";
 
-  if (typeof data === "string") {
-    return data;
-  }
+  if (typeof data === "string") return data;
 
   return (
     data.text ||
@@ -75,20 +62,20 @@ function getText(data) {
   );
 }
 
-function setLoading(button, loading, normalText) {
+function setLoading(button, loading, text) {
   button.disabled = loading;
-  button.textContent = loading ? "Загрузка..." : normalText;
+  button.textContent = loading ? "Загрузка..." : text;
 }
 
 
-// =========================
 // ЧАТ
-// =========================
 
 function initChat() {
   const form = document.getElementById("chatForm");
   const input = document.getElementById("chatInput");
   const messages = document.getElementById("chatMessages");
+
+  if (!form || !input || !messages) return;
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
@@ -110,9 +97,8 @@ function initChat() {
 
       loading.textContent = getText(data);
     } catch (error) {
-      loading.textContent =
-        "Не удалось получить ответ. Проверь соединение с AI.";
       console.error(error);
+      loading.textContent = "Ошибка соединения с AI.";
     }
   });
 }
@@ -130,9 +116,7 @@ function addMessage(container, text, type) {
 }
 
 
-// =========================
 // ФОТО
-// =========================
 
 let selectedPhoto = null;
 
@@ -141,6 +125,8 @@ function initPhoto() {
   const preview = document.getElementById("photoPreview");
   const button = document.getElementById("photoSend");
   const result = document.getElementById("photoResult");
+
+  if (!input || !preview || !button || !result) return;
 
   input.addEventListener("change", () => {
     const file = input.files[0];
@@ -151,7 +137,6 @@ function initPhoto() {
 
     preview.src = URL.createObjectURL(file);
     preview.classList.remove("hidden");
-
     button.disabled = false;
   });
 
@@ -171,9 +156,8 @@ function initPhoto() {
 
       result.textContent = getText(data);
     } catch (error) {
-      result.textContent =
-        "Не удалось обработать фото.";
       console.error(error);
+      result.textContent = "Ошибка обработки фото.";
     }
 
     setLoading(button, false, "Решить задание");
@@ -185,27 +169,23 @@ function fileToBase64(file) {
     const reader = new FileReader();
 
     reader.onload = () => {
-      const result = reader.result;
-      const base64 = result.split(",")[1];
-
-      resolve(base64);
+      resolve(reader.result.split(",")[1]);
     };
 
     reader.onerror = reject;
-
     reader.readAsDataURL(file);
   });
 }
 
 
-// =========================
 // КОНСПЕКТ
-// =========================
 
 function initSummary() {
   const input = document.getElementById("summaryInput");
   const button = document.getElementById("summarySend");
   const result = document.getElementById("summaryResult");
+
+  if (!input || !button || !result) return;
 
   button.addEventListener("click", async () => {
     const text = input.value.trim();
@@ -225,9 +205,8 @@ function initSummary() {
 
       result.textContent = getText(data);
     } catch (error) {
-      result.textContent =
-        "Не удалось создать конспект.";
       console.error(error);
+      result.textContent = "Ошибка создания конспекта.";
     }
 
     setLoading(button, false, "Создать конспект");
@@ -235,14 +214,14 @@ function initSummary() {
 }
 
 
-// =========================
 // ТЕСТЫ
-// =========================
 
 function initTests() {
   const input = document.getElementById("testTopic");
   const button = document.getElementById("testSend");
   const result = document.getElementById("testResult");
+
+  if (!input || !button || !result) return;
 
   button.addEventListener("click", async () => {
     const topic = input.value.trim();
@@ -262,9 +241,8 @@ function initTests() {
 
       result.textContent = getText(data);
     } catch (error) {
-      result.textContent =
-        "Не удалось создать тест.";
       console.error(error);
+      result.textContent = "Ошибка создания теста.";
     }
 
     setLoading(button, false, "Создать тест");
@@ -272,14 +250,14 @@ function initTests() {
 }
 
 
-// =========================
 // КАРТИНКА
-// =========================
 
 function initImage() {
   const input = document.getElementById("imagePrompt");
   const button = document.getElementById("imageSend");
   const result = document.getElementById("imageResult");
+
+  if (!input || !button || !result) return;
 
   button.addEventListener("click", async () => {
     const prompt = input.value.trim();
@@ -291,18 +269,13 @@ function initImage() {
 
     setLoading(button, true, "Создать картинку");
 
-    result.innerHTML = "";
-
     try {
       const data = await apiRequest({
         action: "image",
         prompt: prompt
       });
 
-      const imageData =
-        data.image ||
-        data.imageData ||
-        data.data;
+      const imageData = data.image || data.imageData || data.data;
 
       if (imageData) {
         const img = document.createElement("img");
@@ -311,15 +284,14 @@ function initImage() {
           ? imageData
           : "data:image/png;base64," + imageData;
 
+        result.innerHTML = "";
         result.appendChild(img);
       } else {
         result.textContent = getText(data);
       }
-
     } catch (error) {
-      result.textContent =
-        "Не удалось создать картинку.";
       console.error(error);
+      result.textContent = "Ошибка генерации картинки.";
     }
 
     setLoading(button, false, "Создать картинку");
@@ -327,35 +299,31 @@ function initImage() {
 }
 
 
-// =========================
 // ПРОФИЛЬ
-// =========================
 
 function initProfile() {
   const button = document.getElementById("checkButton");
   const status = document.getElementById("status");
 
+  if (!button || !status) return;
+
   button.addEventListener("click", async () => {
     setLoading(button, true, "Проверить соединение");
 
     try {
-      const response = await fetch(API_URL, {
-        method: "GET"
-      });
+      const response = await fetch(API_URL);
 
       if (response.ok) {
         status.textContent = "✓ Сервер доступен";
       } else {
         status.textContent =
-          "Сервер ответил с ошибкой " + response.status;
+          "Сервер ответил: " + response.status;
       }
-
     } catch (error) {
-      status.textContent =
-        "✕ Сервер недоступен";
       console.error(error);
+      status.textContent = "✕ Сервер недоступен";
     }
 
     setLoading(button, false, "Проверить соединение");
   });
-});
+    }
