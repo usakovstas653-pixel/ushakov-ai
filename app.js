@@ -1,164 +1,200 @@
-const API_URL = "https://ushakov-ai-api123.usakovstas653.workers.dev";
+const API_URL =
+  "https://ushakov-ai-api123.usakovstas653.workers.dev";
 
-function showPage(pageId) {
-    const pages = document.querySelectorAll(".page");
+document.addEventListener("DOMContentLoaded", () => {
+  initNavigation();
+  initChat();
+  initPhoto();
+  initSummary();
+  initTests();
+  initImage();
+  initProfile();
+});
 
-    pages.forEach(page => {
-        page.classList.remove("active");
-        page.style.display = "none";
+
+// =========================
+// НАВИГАЦИЯ
+// =========================
+
+function initNavigation() {
+  document.querySelectorAll("[data-page]").forEach(button => {
+    button.addEventListener("click", () => {
+      openPage(button.dataset.page);
     });
+  });
+}
 
-    const target = document.getElementById(pageId);
+function openPage(pageName) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
 
-    if (target) {
-        target.classList.add("active");
-        target.style.display = "block";
-    }
+  const page = document.getElementById(pageName);
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+  if (page) {
+    page.classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
 
 // =========================
-// API
+// ОБЩИЙ API
 // =========================
 
-async function callAI(data) {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
+async function apiRequest(body) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
 
-        const result = await response.json();
+  if (!response.ok) {
+    throw new Error("Ошибка сервера: " + response.status);
+  }
 
-        if (!response.ok) {
-            throw new Error(result.error || "Ошибка сервера");
-        }
+  return await response.json();
+}
 
-        return result;
+function getText(data) {
+  if (!data) return "Пустой ответ";
 
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+  if (typeof data === "string") {
+    return data;
+  }
+
+  return (
+    data.text ||
+    data.response ||
+    data.answer ||
+    data.result ||
+    data.message ||
+    JSON.stringify(data, null, 2)
+  );
+}
+
+function setLoading(button, loading, normalText) {
+  button.disabled = loading;
+  button.textContent = loading ? "Загрузка..." : normalText;
 }
 
 
 // =========================
-// CHAT
+// ЧАТ
 // =========================
 
-async function sendChat() {
-    const input = document.getElementById("chatInput");
-    const messages = document.getElementById("messages");
+function initChat() {
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatInput");
+  const messages = document.getElementById("chatMessages");
 
-    if (!input || !messages) return;
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
 
     const text = input.value.trim();
 
     if (!text) return;
 
-    messages.innerHTML += `
-        <div class="message user-message">
-            ${escapeHTML(text)}
-        </div>
-    `;
-
+    addMessage(messages, text, "user");
     input.value = "";
 
-    messages.innerHTML += `
-        <div class="message ai-message" id="loadingMessage">
-            Думаю...
-        </div>
-    `;
+    const loading = addMessage(messages, "Думаю...", "ai");
 
     try {
-        const result = await callAI({
-            action: "chat",
-            message: text
-        });
+      const data = await apiRequest({
+        action: "chat",
+        message: text
+      });
 
-        const loading = document.getElementById("loadingMessage");
-
-        if (loading) {
-            loading.remove();
-        }
-
-        messages.innerHTML += `
-            <div class="message ai-message">
-                ${escapeHTML(result.text || result.message || "Пустой ответ")}
-            </div>
-        `;
-
-        messages.scrollTop = messages.scrollHeight;
-
+      loading.textContent = getText(data);
     } catch (error) {
-        const loading = document.getElementById("loadingMessage");
-
-        if (loading) {
-            loading.textContent = "Ошибка: " + error.message;
-        }
+      loading.textContent =
+        "Не удалось получить ответ. Проверь соединение с AI.";
+      console.error(error);
     }
+  });
+}
+
+function addMessage(container, text, type) {
+  const element = document.createElement("div");
+
+  element.className = "message " + type;
+  element.textContent = text;
+
+  container.appendChild(element);
+  container.scrollTop = container.scrollHeight;
+
+  return element;
 }
 
 
 // =========================
-// PHOTO
+// ФОТО
 // =========================
 
-async function sendPhoto() {
-    const input = document.getElementById("photoInput");
-    const status = document.getElementById("photoStatus");
-    const resultBox = document.getElementById("photoResult");
-    const preview = document.getElementById("photoPreview");
+let selectedPhoto = null;
 
-    if (!input || !input.files || !input.files[0]) {
-        alert("Сначала выбери фотографию");
-        return;
-    }
+function initPhoto() {
+  const input = document.getElementById("photoInput");
+  const preview = document.getElementById("photoPreview");
+  const button = document.getElementById("photoSend");
+  const result = document.getElementById("photoResult");
 
+  input.addEventListener("change", () => {
     const file = input.files[0];
 
-    status.textContent = "Загружаю фото...";
+    if (!file) return;
 
-    if (preview) {
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
-    }
+    selectedPhoto = file;
+
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+
+    button.disabled = false;
+  });
+
+  button.addEventListener("click", async () => {
+    if (!selectedPhoto) return;
+
+    setLoading(button, true, "Решить задание");
 
     try {
-        const base64 = await fileToBase64(file);
+      const base64 = await fileToBase64(selectedPhoto);
 
-        status.textContent = "Ushakov AI решает задачу...";
+      const data = await apiRequest({
+        action: "photo",
+        image: base64,
+        mimeType: selectedPhoto.type
+      });
 
-        const result = await callAI({
-            action: "photo",
-            message: "Реши задание на фотографии. Объясни решение понятно и по шагам.",
-            image: {
-                mimeType: file.type || "image/jpeg",
-                data: base64
-            }
-        });
-
-        status.textContent = "Готово!";
-
-        if (resultBox) {
-            resultBox.textContent =
-                result.text ||
-                result.message ||
-                "Не удалось получить ответ.";
-        }
-
+      result.textContent = getText(data);
     } catch (error) {
-        status.textContent = "Ошибка: " + error.message;
+      result.textContent =
+        "Не удалось обработать фото.";
+      console.error(error);
     }
+
+    setLoading(button, false, "Решить задание");
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = result.split(",")[1];
+
+      resolve(base64);
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
 }
 
 
@@ -166,38 +202,36 @@ async function sendPhoto() {
 // КОНСПЕКТ
 // =========================
 
-async function createSummary() {
-    const input = document.getElementById("summaryInput");
-    const status = document.getElementById("summaryStatus");
-    const result = document.getElementById("summaryResult");
+function initSummary() {
+  const input = document.getElementById("summaryInput");
+  const button = document.getElementById("summarySend");
+  const result = document.getElementById("summaryResult");
 
-    if (!input) return;
-
+  button.addEventListener("click", async () => {
     const text = input.value.trim();
 
     if (!text) {
-        alert("Вставь текст для конспекта");
-        return;
+      result.textContent = "Сначала вставь текст.";
+      return;
     }
 
-    status.textContent = "Создаю конспект...";
+    setLoading(button, true, "Создать конспект");
 
     try {
-        const response = await callAI({
-            action: "summary",
-            message: text
-        });
+      const data = await apiRequest({
+        action: "summary",
+        text: text
+      });
 
-        status.textContent = "Готово!";
-
-        result.textContent =
-            response.text ||
-            response.message ||
-            "Не удалось создать конспект.";
-
+      result.textContent = getText(data);
     } catch (error) {
-        status.textContent = "Ошибка: " + error.message;
+      result.textContent =
+        "Не удалось создать конспект.";
+      console.error(error);
     }
+
+    setLoading(button, false, "Создать конспект");
+  });
 }
 
 
@@ -205,188 +239,123 @@ async function createSummary() {
 // ТЕСТЫ
 // =========================
 
-async function createTest() {
-    const topic = document.getElementById("testTopic");
-    const count = document.getElementById("testCount");
-    const status = document.getElementById("testStatus");
-    const result = document.getElementById("testResult");
+function initTests() {
+  const input = document.getElementById("testTopic");
+  const button = document.getElementById("testSend");
+  const result = document.getElementById("testResult");
 
-    if (!topic) return;
+  button.addEventListener("click", async () => {
+    const topic = input.value.trim();
 
-    const topicText = topic.value.trim();
-    const amount = count ? count.value : "5";
-
-    if (!topicText) {
-        alert("Напиши тему теста");
-        return;
+    if (!topic) {
+      result.textContent = "Напиши тему теста.";
+      return;
     }
 
-    status.textContent = "Генерирую тест...";
+    setLoading(button, true, "Создать тест");
 
     try {
-        const response = await callAI({
-            action: "test",
-            message: `Создай школьный тест по теме "${topicText}" на ${amount} вопросов.
-Для каждого вопроса дай варианты ответа и укажи правильный ответ.`
-        });
+      const data = await apiRequest({
+        action: "test",
+        topic: topic
+      });
 
-        status.textContent = "Готово!";
-
-        result.textContent =
-            response.text ||
-            response.message ||
-            "Не удалось создать тест.";
-
+      result.textContent = getText(data);
     } catch (error) {
-        status.textContent = "Ошибка: " + error.message;
+      result.textContent =
+        "Не удалось создать тест.";
+      console.error(error);
     }
+
+    setLoading(button, false, "Создать тест");
+  });
 }
 
 
 // =========================
-// ГЕНЕРАЦИЯ КАРТИНКИ
+// КАРТИНКА
 // =========================
 
-async function createImage() {
-    const input = document.getElementById("imagePrompt");
-    const status = document.getElementById("imageStatus");
-    const result = document.getElementById("imageResult");
+function initImage() {
+  const input = document.getElementById("imagePrompt");
+  const button = document.getElementById("imageSend");
+  const result = document.getElementById("imageResult");
 
-    if (!input) return;
-
+  button.addEventListener("click", async () => {
     const prompt = input.value.trim();
 
     if (!prompt) {
-        alert("Напиши, какую картинку создать");
-        return;
+      result.textContent = "Напиши описание картинки.";
+      return;
     }
 
-    status.textContent = "Создаю изображение...";
+    setLoading(button, true, "Создать картинку");
+
+    result.innerHTML = "";
 
     try {
-        const response = await callAI({
-            action: "image",
-            message: prompt
-        });
+      const data = await apiRequest({
+        action: "image",
+        prompt: prompt
+      });
 
-        status.textContent = "Готово!";
+      const imageData =
+        data.image ||
+        data.imageData ||
+        data.data;
 
-        if (response.image) {
-            result.innerHTML = `
-                <img
-                    src="data:${response.mimeType || "image/jpeg"};base64,${response.image}"
-                    style="max-width:100%; border-radius:20px;"
-                >
-            `;
-        } else {
-            result.textContent = "Изображение не получено.";
-        }
+      if (imageData) {
+        const img = document.createElement("img");
+
+        img.src = imageData.startsWith("data:")
+          ? imageData
+          : "data:image/png;base64," + imageData;
+
+        result.appendChild(img);
+      } else {
+        result.textContent = getText(data);
+      }
 
     } catch (error) {
-        status.textContent = "Ошибка: " + error.message;
+      result.textContent =
+        "Не удалось создать картинку.";
+      console.error(error);
     }
+
+    setLoading(button, false, "Создать картинку");
+  });
 }
 
 
 // =========================
-// FILE → BASE64
+// ПРОФИЛЬ
 // =========================
 
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+function initProfile() {
+  const button = document.getElementById("checkButton");
+  const status = document.getElementById("status");
 
-        reader.onload = () => {
-            const result = reader.result;
+  button.addEventListener("click", async () => {
+    setLoading(button, true, "Проверить соединение");
 
-            const base64 = result.split(",")[1];
+    try {
+      const response = await fetch(API_URL, {
+        method: "GET"
+      });
 
-            resolve(base64);
-        };
+      if (response.ok) {
+        status.textContent = "✓ Сервер доступен";
+      } else {
+        status.textContent =
+          "Сервер ответил с ошибкой " + response.status;
+      }
 
-        reader.onerror = reject;
-
-        reader.readAsDataURL(file);
-    });
-}
-
-
-// =========================
-// БЕЗОПАСНЫЙ ТЕКСТ
-// =========================
-
-function escapeHTML(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML.replace(/\n/g, "<br>");
-}
-
-
-// =========================
-// КНОПКИ
-// =========================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    // Стартовая страница
-    showPage("home");
-
-
-    // Чат
-    const sendButton = document.getElementById("sendButton");
-
-    if (sendButton) {
-        sendButton.addEventListener("click", sendChat);
+    } catch (error) {
+      status.textContent =
+        "✕ Сервер недоступен";
+      console.error(error);
     }
 
-    const chatInput = document.getElementById("chatInput");
-
-    if (chatInput) {
-        chatInput.addEventListener("keydown", event => {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                sendChat();
-            }
-        });
-    }
-
-
-    // Фото
-    const photoButton = document.getElementById("photoButton");
-
-    if (photoButton) {
-        photoButton.addEventListener("click", sendPhoto);
-    }
-
-
-    // Конспект
-    const summaryButton = document.getElementById("summaryButton");
-
-    if (summaryButton) {
-        summaryButton.addEventListener("click", createSummary);
-    }
-
-
-    // Тесты
-    const testButton = document.getElementById("testButton");
-
-    if (testButton) {
-        testButton.addEventListener("click", createTest);
-    }
-
-
-    // Генерация изображения
-    const imageButton = document.getElementById("imageButton");
-
-    if (imageButton) {
-        imageButton.addEventListener("click", createImage);
-    }
-
+    setLoading(button, false, "Проверить соединение");
+  });
 });
-
-
-// =========================
-// ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ
-// =========================
-
-window.showPage = showPage;
