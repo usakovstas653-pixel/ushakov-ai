@@ -1,7 +1,44 @@
 const API_URL = "https://ushakov-ai-api123.usakovstas653.workers.dev";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initNavigation();
+  // Переключение страниц
+  document.querySelectorAll("[data-page]").forEach((button) => {
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const pageId = this.getAttribute("data-page");
+
+      document.querySelectorAll(".page").forEach((page) => {
+        page.classList.remove("active");
+        page.style.display = "none";
+      });
+
+      const target = document.getElementById(pageId);
+
+      if (target) {
+        target.classList.add("active");
+        target.style.display = "block";
+        window.scrollTo(0, 0);
+      }
+
+      console.log("Открыта страница:", pageId);
+    });
+  });
+
+  // Показываем первую страницу
+  const firstPage = document.querySelector(".page");
+
+  if (firstPage) {
+    document.querySelectorAll(".page").forEach((page) => {
+      page.classList.remove("active");
+      page.style.display = "none";
+    });
+
+    firstPage.classList.add("active");
+    firstPage.style.display = "block";
+  }
+
   initChat();
   initPhoto();
   initSummary();
@@ -10,65 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initProfile();
 });
 
-function initNavigation() {
-  document.querySelectorAll("[data-page]").forEach(button => {
-    button.addEventListener("click", () => {
-      openPage(button.dataset.page);
-    });
-  });
-}
 
-function openPage(pageName) {
-  document.querySelectorAll(".page").forEach(page => {
-    page.classList.remove("active");
-  });
-
-  const page = document.getElementById(pageName);
-
-  if (page) {
-    page.classList.add("active");
-    window.scrollTo(0, 0);
-  }
-}
-
-async function apiRequest(body) {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    throw new Error("HTTP " + response.status);
-  }
-
-  return await response.json();
-}
-
-function getText(data) {
-  if (!data) return "Пустой ответ";
-
-  if (typeof data === "string") return data;
-
-  return (
-    data.text ||
-    data.response ||
-    data.answer ||
-    data.result ||
-    data.message ||
-    JSON.stringify(data, null, 2)
-  );
-}
-
-function setLoading(button, loading, text) {
-  button.disabled = loading;
-  button.textContent = loading ? "Загрузка..." : text;
-}
-
-
-// ЧАТ
+// ====================
+// CHAT
+// ====================
 
 function initChat() {
   const form = document.getElementById("chatForm");
@@ -77,7 +59,7 @@ function initChat() {
 
   if (!form || !input || !messages) return;
 
-  form.addEventListener("submit", async event => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const text = input.value.trim();
@@ -116,7 +98,54 @@ function addMessage(container, text, type) {
 }
 
 
-// ФОТО
+// ====================
+// API
+// ====================
+
+async function apiRequest(body) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status);
+  }
+
+  return await response.json();
+}
+
+function getText(data) {
+  if (!data) return "Пустой ответ";
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  return (
+    data.text ||
+    data.response ||
+    data.answer ||
+    data.result ||
+    data.message ||
+    JSON.stringify(data, null, 2)
+  );
+}
+
+function setLoading(button, loading, normalText) {
+  button.disabled = loading;
+  button.textContent = loading
+    ? "Загрузка..."
+    : normalText;
+}
+
+
+// ====================
+// PHOTO
+// ====================
 
 let selectedPhoto = null;
 
@@ -137,6 +166,7 @@ function initPhoto() {
 
     preview.src = URL.createObjectURL(file);
     preview.classList.remove("hidden");
+
     button.disabled = false;
   });
 
@@ -173,12 +203,15 @@ function fileToBase64(file) {
     };
 
     reader.onerror = reject;
+
     reader.readAsDataURL(file);
   });
 }
 
 
-// КОНСПЕКТ
+// ====================
+// SUMMARY
+// ====================
 
 function initSummary() {
   const input = document.getElementById("summaryInput");
@@ -214,7 +247,9 @@ function initSummary() {
 }
 
 
-// ТЕСТЫ
+// ====================
+// TESTS
+// ====================
 
 function initTests() {
   const input = document.getElementById("testTopic");
@@ -250,7 +285,9 @@ function initTests() {
 }
 
 
-// КАРТИНКА
+// ====================
+// IMAGE
+// ====================
 
 function initImage() {
   const input = document.getElementById("imagePrompt");
@@ -275,7 +312,10 @@ function initImage() {
         prompt: prompt
       });
 
-      const imageData = data.image || data.imageData || data.data;
+      const imageData =
+        data.image ||
+        data.imageData ||
+        data.data;
 
       if (imageData) {
         const img = document.createElement("img");
@@ -284,11 +324,15 @@ function initImage() {
           ? imageData
           : "data:image/png;base64," + imageData;
 
+        img.style.maxWidth = "100%";
+        img.style.borderRadius = "16px";
+
         result.innerHTML = "";
         result.appendChild(img);
       } else {
         result.textContent = getText(data);
       }
+
     } catch (error) {
       console.error(error);
       result.textContent = "Ошибка генерации картинки.";
@@ -299,7 +343,9 @@ function initImage() {
 }
 
 
-// ПРОФИЛЬ
+// ====================
+// PROFILE
+// ====================
 
 function initProfile() {
   const button = document.getElementById("checkButton");
@@ -319,6 +365,7 @@ function initProfile() {
         status.textContent =
           "Сервер ответил: " + response.status;
       }
+
     } catch (error) {
       console.error(error);
       status.textContent = "✕ Сервер недоступен";
@@ -326,4 +373,4 @@ function initProfile() {
 
     setLoading(button, false, "Проверить соединение");
   });
-    }
+}
