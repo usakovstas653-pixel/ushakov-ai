@@ -1,150 +1,377 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Ushakov AI</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header>
-    <h1>🚀 Ushakov AI</h1>
-    <p>Твой умный помощник для учёбы</p>
+  <!-- Верхняя панель -->
+  <header class="topbar">
+    <div class="brand" onclick="showPage('home')">
+      🚀 Ushakov AI
+    </div>
+
+    <button class="profile-btn" onclick="showPage('profile')">
+      👤 Профиль
+    </button>
   </header>
 
-  <nav>
-    <button onclick="showPage('chat')">💬 AI Chat</button>
-    <button onclick="showPage('photo')">📸 Фото</button>
-    <button onclick="showPage('summary')">📝 Конспект</button>
-    <button onclick="showPage('tests')">🎯 Тесты</button>
-    <button onclick="showPage('image')">🎨 Картинки</button>
-    <button onclick="showPage('pro')">⭐ PRO</button>
-    <button onclick="showPage('profile')">👤 Профиль</button>
-  </nav>
 
-  <main>
+  <main class="container">
 
+    <!-- Главная -->
+    <section id="home" class="page active">
+
+      <div class="hero">
+
+        <div class="badge">
+          ✨ AI-помощник для учёбы
+        </div>
+
+        <p class="eyebrow">
+          УЧИСЬ УМНЕЕ
+        </p>
+
+        <h1>
+          Твоя учёба.<br>
+          <span>С AI.</span>
+        </h1>
+
+        <p>
+          Решай задачи, разбирай сложные темы,
+          готовься к тестам и учись быстрее вместе
+          с Ushakov AI.
+        </p>
+
+      </div>
+
+
+      <!-- Навигация -->
+      <nav class="tabs">
+
+        <button onclick="showPage('chat')">
+          💬 AI Chat
+        </button>
+
+        <button onclick="showPage('photo')">
+          📸 Фото
+        </button>
+
+        <button onclick="showPage('summary')">
+          📝 Конспект
+        </button>
+
+        <button onclick="showPage('tests')">
+          🎯 Тесты
+        </button>
+
+        <button onclick="showPage('image')">
+          🎨 Картинки
+        </button>
+
+      </nav>
+
+
+      <!-- Карточки -->
+      <div class="grid">
+
+        <button class="card" onclick="showPage('chat')">
+          <b>💬 AI Chat</b>
+          <span>
+            Задай любой вопрос и получи
+            подробное объяснение.
+          </span>
+        </button>
+
+
+        <button class="card" onclick="showPage('photo')">
+          <b>📸 Решить по фото</b>
+          <span>
+            Загрузи фотографию задачи
+            и получи решение.
+          </span>
+        </button>
+
+
+        <button class="card" onclick="showPage('summary')">
+          <b>📝 Конспект</b>
+          <span>
+            Превращай большой текст
+            в удобный конспект.
+          </span>
+        </button>
+
+
+        <button class="card" onclick="showPage('tests')">
+          <b>🎯 Подготовка к тесту</b>
+          <span>
+            Тренируйся и проверяй свои знания
+            с помощью AI.
+          </span>
+        </button>
+
+
+        <button class="card" onclick="showPage('image')">
+          <b>🎨 Картинки</b>
+          <span>
+            Создавай изображения
+            с помощью AI.
+          </span>
+        </button>
+
+
+        <button class="card" onclick="showPage('pro')">
+          <b>⭐ Ushakov PRO</b>
+          <span>
+            Больше возможностей,
+            расширенные лимиты и функции.
+          </span>
+        </button>
+
+      </div>
+
+
+      <!-- PRO -->
+      <div class="pro-banner" onclick="showPage('pro')">
+
+        <div>
+          <strong>⭐ Ushakov AI PRO</strong>
+          <span>
+            Получи больше возможностей
+          </span>
+        </div>
+
+        <div class="arrow">
+          →
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- AI CHAT -->
     <section id="chat" class="page">
-      <h2>💬 AI Chat</h2>
 
-      <div id="messages" class="messages"></div>
+      <div class="panel">
 
-      <div class="chat-input">
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
+
+        <h2>💬 AI Chat</h2>
+
+        <p class="muted">
+          Задай вопрос — Ushakov AI поможет разобраться.
+        </p>
+
+        <div id="messages" class="messages"></div>
+
+        <div class="input-row">
+
+          <input
+            id="chatInput"
+            type="text"
+            placeholder="Напиши вопрос..."
+          >
+
+          <button id="sendButton">
+            Отправить
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ФОТО -->
+    <section id="photo" class="page">
+
+      <div class="panel">
+
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
+
+        <h2>📸 Решить задачу по фото</h2>
+
+        <p class="muted">
+          Загрузи фотографию задания —
+          Ushakov AI попробует распознать
+          условие и решить его пошагово.
+        </p>
+
         <input
-          id="chatInput"
-          type="text"
-          placeholder="Напиши вопрос..."
+          id="photoInput"
+          type="file"
+          accept="image/*"
+          hidden
         >
 
-        <button id="sendButton">
-          Отправить
+        <button id="photoButton" class="primary">
+          📸 Выбрать фото
         </button>
+
+        <div id="photoStatus" class="muted"></div>
+
+        <img
+          id="photoPreview"
+          alt="Предпросмотр"
+        >
+
+        <div
+          id="photoResult"
+          class="messages"
+        ></div>
+
       </div>
-    </section>
-
-
-    <section id="photo" class="page" style="display:none;">
-
-      <h2>📸 Решить задачу по фото</h2>
-
-      <p>
-        Загрузи фотографию задания — Ushakov AI попробует
-        распознать условие и решить его пошагово.
-      </p>
-
-      <input
-        id="photoInput"
-        type="file"
-        accept="image/*"
-        hidden
-      >
-
-      <button id="photoButton">
-        📸 Выбрать фото
-      </button>
-
-      <div id="photoStatus"></div>
-
-      <img
-        id="photoPreview"
-        style="
-          display:none;
-          max-width:100%;
-          max-height:400px;
-          margin-top:15px;
-          border-radius:12px;
-        "
-        alt="Предпросмотр"
-      >
-
-      <div id="photoResult" class="messages"></div>
 
     </section>
 
 
-    <section id="summary" class="page" style="display:none;">
+    <!-- КОНСПЕКТ -->
+    <section id="summary" class="page">
 
-      <h2>📝 Конспект</h2>
+      <div class="panel">
 
-      <p>
-        Скоро здесь можно будет делать краткие конспекты из текста.
-      </p>
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
 
-    </section>
+        <h2>📝 Конспект</h2>
 
+        <p class="muted">
+          Скоро здесь можно будет делать
+          краткие конспекты из текста.
+        </p>
 
-    <section id="tests" class="page" style="display:none;">
+        <div class="coming">
+          🚧 Функция находится в разработке
+        </div>
 
-      <h2>🎯 Подготовка к тесту</h2>
-
-      <p>
-        Скоро здесь появится генератор вопросов для подготовки.
-      </p>
-
-    </section>
-
-
-    <section id="image" class="page" style="display:none;">
-
-      <h2>🎨 Генерация изображений</h2>
-
-      <p>
-        Раздел генерации изображений готовим следующим этапом.
-      </p>
+      </div>
 
     </section>
 
 
-    <section id="pro" class="page" style="display:none;">
+    <!-- ТЕСТЫ -->
+    <section id="tests" class="page">
 
-      <h2>⭐ Ushakov AI PRO</h2>
+      <div class="panel">
 
-      <p>
-        Больше возможностей и расширенные лимиты.
-      </p>
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
 
-      <p>
-        Для получения PRO — свяжись с владельцем Ushakov AI.
-      </p>
+        <h2>🎯 Подготовка к тесту</h2>
+
+        <p class="muted">
+          Скоро здесь появится генератор
+          вопросов для подготовки.
+        </p>
+
+        <div class="coming">
+          🚧 Функция находится в разработке
+        </div>
+
+      </div>
 
     </section>
 
 
-    <section id="profile" class="page" style="display:none;">
+    <!-- КАРТИНКИ -->
+    <section id="image" class="page">
 
-      <h2>👤 Профиль</h2>
+      <div class="panel">
 
-      <p>
-        Профиль пользователя появится здесь.
-      </p>
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
+
+        <h2>🎨 Генерация изображений</h2>
+
+        <p class="muted">
+          Раздел генерации изображений
+          готовим следующим этапом.
+        </p>
+
+        <div class="coming">
+          🚧 Функция находится в разработке
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PRO -->
+    <section id="pro" class="page">
+
+      <div class="panel center">
+
+        <button class="back-btn back-left" onclick="showPage('home')">
+          ← Назад
+        </button>
+
+        <div class="pro-icon">
+          ⭐
+        </div>
+
+        <h2>Ushakov AI PRO</h2>
+
+        <p class="muted">
+          Больше возможностей,
+          расширенные лимиты и дополнительные
+          функции для учёбы.
+        </p>
+
+        <button class="primary">
+          Узнать больше
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ПРОФИЛЬ -->
+    <section id="profile" class="page">
+
+      <div class="panel">
+
+        <button class="back-btn" onclick="showPage('home')">
+          ← Назад
+        </button>
+
+        <h2>👤 Профиль</h2>
+
+        <p class="muted">
+          Профиль пользователя появится здесь.
+        </p>
+
+      </div>
 
     </section>
 
   </main>
 
+
+  <footer>
+    © 2026 Ushakov AI · Умный помощник для учёбы
+  </footer>
+
+
   <script src="app.js"></script>
 
 </body>
 </html>
+```
