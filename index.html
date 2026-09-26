@@ -2,80 +2,111 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#080b18">
 <title>Ushakov AI</title>
 
 <style>
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-  font-family: Arial, sans-serif;
-  background: #0b1020;
-  color: white;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  color: #f8f9ff;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(91, 108, 255, .20), transparent 32%),
+    radial-gradient(circle at 100% 15%, rgba(139, 76, 255, .16), transparent 30%),
+    #070a15;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
 }
 
 button {
-  font-family: inherit;
   cursor: pointer;
-  border: 0;
+  touch-action: manipulation;
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: wait;
 }
 
 .header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #111936;
-  border-bottom: 1px solid #29345f;
-  padding: 14px 16px;
+  padding: 14px 14px 10px;
+  background: rgba(7, 10, 21, .88);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .logo {
+  max-width: 920px;
+  margin: auto;
   font-size: 22px;
-  font-weight: 800;
-  color: #7c9cff;
+  font-weight: 850;
+  letter-spacing: -.6px;
+}
+
+.logo span {
+  color: #7888ff;
 }
 
 .nav {
   display: flex;
-  gap: 8px;
+  gap: 7px;
+  max-width: 920px;
+  margin: 12px auto 0;
   overflow-x: auto;
-  margin-top: 12px;
-  padding-bottom: 3px;
+  padding: 1px 0 4px;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav button {
   flex: 0 0 auto;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #202a4d;
-  color: white;
-  font-size: 14px;
-}
-
-.nav button:active {
-  transform: scale(0.96);
+  padding: 9px 13px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.055);
+  color: #b9c1d9;
+  font-size: 13px;
+  font-weight: 650;
 }
 
 .nav button.active {
-  background: #536dfe;
+  background: linear-gradient(135deg,#6376ff,#8065ff);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 7px 22px rgba(99,118,255,.25);
+}
+
+.nav button:active {
+  transform: scale(.95);
 }
 
 .container {
   width: 100%;
-  max-width: 900px;
+  max-width: 920px;
   margin: auto;
-  padding: 24px 16px 50px;
+  padding: 22px 14px 70px;
 }
 
 .page {
@@ -84,132 +115,290 @@ button {
 
 .page.active {
   display: block;
+  animation: appear .2s ease;
 }
 
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HERO */
+
 .hero {
-  padding: 35px 0;
+  position: relative;
+  overflow: hidden;
+  padding: 32px 22px;
+  border-radius: 27px;
+  border: 1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(135deg,
+      rgba(92,109,255,.17),
+      rgba(128,79,255,.07)
+    ),
+    rgba(16,22,43,.82);
+  box-shadow: 0 25px 70px rgba(0,0,0,.25);
+}
+
+.hero:after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -90px;
+  top: -90px;
+  border-radius: 50%;
+  background: rgba(108,91,255,.22);
+  filter: blur(15px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
 }
 
 h1 {
-  font-size: 38px;
-  line-height: 1.1;
-  margin: 0 0 15px;
+  margin: 0 0 14px;
+  font-size: clamp(34px, 9vw, 57px);
+  line-height: 1.02;
+  letter-spacing: -2px;
 }
 
 h2 {
-  font-size: 28px;
-  margin-top: 0;
+  margin: 5px 0 18px;
+  font-size: 30px;
+  letter-spacing: -.8px;
+}
+
+h3 {
+  margin: 0 0 7px;
 }
 
 p {
-  color: #b9c2df;
+  color: #aeb7d1;
   line-height: 1.6;
 }
 
-.card {
-  background: #151e3b;
-  border: 1px solid #29345f;
-  border-radius: 18px;
-  padding: 20px;
-  margin: 15px 0;
-}
+/* CARDS */
 
-.big-button {
-  width: 100%;
-  padding: 17px;
-  border-radius: 13px;
-  background: #536dfe;
-  color: white;
-  font-size: 17px;
-  font-weight: 700;
-  margin-top: 10px;
-}
-
-.big-button:active {
-  transform: scale(0.98);
-}
-
-textarea,
-input {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 12px;
-  border: 1px solid #36436f;
-  background: #0d142a;
-  color: white;
-  font-size: 16px;
-  outline: none;
-}
-
-textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-
-textarea:focus,
-input:focus {
-  border-color: #6f87ff;
-}
-
-.result {
-  white-space: pre-wrap;
-  background: #0d142a;
-  border: 1px solid #29345f;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 15px;
-  min-height: 60px;
-}
-
-.feature-grid {
+.grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 20px;
+  grid-template-columns: repeat(2,1fr);
+  gap: 13px;
+  margin-top: 16px;
+}
+
+.card,
+.feature {
+  border: 1px solid rgba(255,255,255,.075);
+  background: rgba(16,22,43,.80);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,.16),
+    inset 0 1px rgba(255,255,255,.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.card {
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 21px;
 }
 
 .feature {
-  background: #151e3b;
-  border: 1px solid #29345f;
-  border-radius: 16px;
-  padding: 18px;
+  padding: 19px;
+  border-radius: 19px;
 }
 
-.feature button {
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+/* BUTTONS */
+
+.primary {
   width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #29365f;
+  margin-top: 13px;
+  padding: 15px 18px;
+  border: 0;
+  border-radius: 14px;
   color: white;
+  font-weight: 750;
+  font-size: 16px;
+  background: linear-gradient(135deg,#6276ff,#8065ff);
+  box-shadow: 0 10px 27px rgba(96,113,255,.20);
 }
 
-.status {
-  position: fixed;
-  bottom: 15px;
-  left: 15px;
-  right: 15px;
-  z-index: 9999;
+.primary:active {
+  transform: scale(.985);
+}
+
+.secondary {
+  width: 100%;
+  margin-top: 11px;
   padding: 12px 15px;
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: 12px;
-  background: #18234a;
-  border: 1px solid #536dfe;
-  text-align: center;
-  display: none;
+  color: white;
+  background: rgba(255,255,255,.055);
+  font-weight: 650;
 }
 
-.status.show {
+.secondary:active {
+  transform: scale(.98);
+}
+
+/* INPUTS */
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  outline: none;
+  color: white;
+  background: rgba(4,8,19,.72);
+}
+
+textarea {
+  min-height: 145px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+input[type="text"] {
+  min-height: 50px;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+  border-color: #697cff;
+  box-shadow: 0 0 0 3px rgba(105,124,255,.10);
+}
+
+::placeholder {
+  color: #707a98;
+}
+
+/* FILE */
+
+.file-box {
+  padding: 15px;
+  border: 1px dashed rgba(120,135,255,.4);
+  border-radius: 15px;
+  background: rgba(90,105,255,.05);
+}
+
+input[type="file"] {
+  width: 100%;
+  color: #bfc6dd;
+}
+
+/* RESULT */
+
+.result {
+  display: none;
+  margin-top: 15px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 15px;
+  background: rgba(3,7,17,.68);
+  color: #e0e4f2;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.result.show {
   display: block;
 }
 
-@media (max-width: 600px) {
-  h1 {
-    font-size: 32px;
+.result.loading {
+  color: #aeb9ff;
+}
+
+/* GENERATED IMAGE */
+
+.generated-image {
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 17px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* STATUS */
+
+#status {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 9999;
+  width: calc(100% - 28px);
+  max-width: 430px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(110,128,255,.4);
+  background: rgba(18,25,53,.95);
+  color: white;
+  text-align: center;
+  box-shadow: 0 15px 45px rgba(0,0,0,.4);
+  transform: translate(-50%,130px);
+  opacity: 0;
+  pointer-events: none;
+  transition: .25s ease;
+}
+
+#status.show {
+  transform: translate(-50%,0);
+  opacity: 1;
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+  .grid {
+    grid-template-columns: 1fr;
   }
 
-  .feature-grid {
-    grid-template-columns: 1fr;
+  .container {
+    padding: 18px 12px 60px;
+  }
+
+  .hero {
+    padding: 28px 19px;
+    border-radius: 23px;
+  }
+
+  .card {
+    padding: 17px;
+  }
+
+  h1 {
+    font-size: 35px;
+  }
+
+  h2 {
+    font-size: 27px;
+  }
+}
+
+@media (max-width: 380px) {
+  h1 {
+    font-size: 31px;
+  }
+
+  .nav button {
+    padding: 8px 11px;
+    font-size: 12px;
   }
 }
 </style>
@@ -218,386 +407,835 @@ input:focus {
 <body>
 
 <header class="header">
-  <div class="logo">⚡ Ushakov AI</div>
+
+  <div class="logo">
+    ⚡ <span>Ushakov</span> AI
+  </div>
 
   <nav class="nav">
-    <button onclick="showPage('home', this)" class="active">Главная</button>
-    <button onclick="showPage('chat', this)">Чат</button>
-    <button onclick="showPage('photo', this)">Фото</button>
-    <button onclick="showPage('summary', this)">Конспект</button>
-    <button onclick="showPage('tests', this)">Тесты</button>
-    <button onclick="showPage('image', this)">Картинки</button>
-    <button onclick="showPage('profile', this)">Профиль</button>
+
+    <button class="active" data-page="home">
+      Главная
+    </button>
+
+    <button data-page="chat">
+      💬 Чат
+    </button>
+
+    <button data-page="photo">
+      📷 Фото
+    </button>
+
+    <button data-page="summary">
+      📝 Конспект
+    </button>
+
+    <button data-page="tests">
+      🧠 Тесты
+    </button>
+
+    <button data-page="image">
+      🎨 Картинка
+    </button>
+
+    <button data-page="profile">
+      👤 Профиль
+    </button>
+
   </nav>
+
 </header>
+
 
 <main class="container">
 
-  <!-- ГЛАВНАЯ -->
-  <section id="home" class="page active">
-    <div class="hero">
-      <h1>Твой школьный<br>AI-помощник 🚀</h1>
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+  <div class="hero">
+
+    <div class="hero-content">
+
+      <h1>
+        Твой школьный<br>
+        AI-помощник 🚀
+      </h1>
 
       <p>
-        Ushakov AI помогает с домашкой, объясняет темы,
-        работает с фотографиями и создаёт конспекты.
+        Помощь с домашкой, объяснение сложных тем,
+        решение заданий по фото, конспекты и тесты.
       </p>
 
-      <button class="big-button" onclick="showPage('chat')">
-        💬 Открыть AI-чат
+      <button class="primary" data-go="chat">
+        💬 Задать вопрос AI
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid">
+
+    <div class="feature">
+      <div class="feature-icon">💬</div>
+      <h3>AI-чат</h3>
+      <p>Задай вопрос и получи подробное объяснение.</p>
+      <button class="secondary" data-go="chat">
+        Открыть
       </button>
     </div>
 
-    <div class="feature-grid">
 
-      <div class="feature">
-        <h3>💬 AI-чат</h3>
-        <p>Задай любой школьный вопрос.</p>
-        <button onclick="showPage('chat')">
-          Открыть
-        </button>
-      </div>
-
-      <div class="feature">
-        <h3>📷 Фото</h3>
-        <p>Отправь фотографию задания.</p>
-        <button onclick="showPage('photo')">
-          Открыть
-        </button>
-      </div>
-
-      <div class="feature">
-        <h3>📝 Конспект</h3>
-        <p>Преврати текст в краткий конспект.</p>
-        <button onclick="showPage('summary')">
-          Открыть
-        </button>
-      </div>
-
-      <div class="feature">
-        <h3>🧠 Тесты</h3>
-        <p>Создавай тесты по школьным темам.</p>
-        <button onclick="showPage('tests')">
-          Открыть
-        </button>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- ЧАТ -->
-  <section id="chat" class="page">
-    <h2>💬 AI-чат</h2>
-
-    <div class="card">
-      <p>Напиши свой вопрос:</p>
-
-      <textarea id="chatInput"
-        placeholder="Например: объясни теорему Пифагора простыми словами"></textarea>
-
-      <button class="big-button" onclick="sendChat()">
-        🚀 Спросить AI
+    <div class="feature">
+      <div class="feature-icon">📷</div>
+      <h3>Решение по фото</h3>
+      <p>Загрузи фотографию школьного задания.</p>
+      <button class="secondary" data-go="photo">
+        Открыть
       </button>
-
-      <div id="chatResult" class="result">
-        Здесь появится ответ.
-      </div>
     </div>
-  </section>
 
 
-  <!-- ФОТО -->
-  <section id="photo" class="page">
-    <h2>📷 Решение по фото</h2>
+    <div class="feature">
+      <div class="feature-icon">📝</div>
+      <h3>Конспект</h3>
+      <p>Сделай длинный текст коротким и понятным.</p>
+      <button class="secondary" data-go="summary">
+        Открыть
+      </button>
+    </div>
 
-    <div class="card">
+
+    <div class="feature">
+      <div class="feature-icon">🧠</div>
+      <h3>Тесты</h3>
+      <p>Создай вопросы по любой школьной теме.</p>
+      <button class="secondary" data-go="tests">
+        Открыть
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- CHAT -->
+
+<section id="chat" class="page">
+
+  <h2>💬 AI-чат</h2>
+
+  <div class="card">
+
+    <p>
+      Напиши вопрос. Можно попросить объяснить тему,
+      решить задачу или помочь с домашкой.
+    </p>
+
+    <textarea
+      id="chatInput"
+      placeholder="Например: объясни теорему Пифагора простыми словами..."
+    ></textarea>
+
+    <button class="primary" id="chatButton">
+      🚀 Спросить AI
+    </button>
+
+    <div class="result" id="chatResult"></div>
+
+  </div>
+
+</section>
+
+
+<!-- PHOTO -->
+
+<section id="photo" class="page">
+
+  <h2>📷 Задание по фото</h2>
+
+  <div class="card">
+
+    <p>
+      Выбери фотографию задания.
+    </p>
+
+    <div class="file-box">
 
       <input
-        id="photoInput"
         type="file"
+        id="photoInput"
         accept="image/*"
       >
 
-      <button class="big-button" onclick="photoTest()">
-        🔍 Проверить кнопку
-      </button>
-
-      <div id="photoResult" class="result">
-        Выбери фотографию задания.
-      </div>
-
     </div>
-  </section>
+
+    <button class="primary" id="photoButton">
+      🔍 Решить задание
+    </button>
+
+    <div class="result" id="photoResult"></div>
+
+  </div>
+
+</section>
 
 
-  <!-- КОНСПЕКТ -->
-  <section id="summary" class="page">
-    <h2>📝 Конспект</h2>
+<!-- SUMMARY -->
 
-    <div class="card">
+<section id="summary" class="page">
 
-      <textarea
-        id="summaryInput"
-        placeholder="Вставь сюда текст урока..."
-      ></textarea>
+  <h2>📝 Конспект</h2>
 
-      <button class="big-button" onclick="makeSummary()">
-        ✨ Сделать конспект
-      </button>
+  <div class="card">
 
-      <div id="summaryResult" class="result">
-        Здесь появится конспект.
-      </div>
+    <p>
+      Вставь текст урока — AI сделает понятный конспект.
+    </p>
 
-    </div>
-  </section>
+    <textarea
+      id="summaryInput"
+      placeholder="Вставь сюда текст..."
+    ></textarea>
 
+    <button class="primary" id="summaryButton">
+      ✨ Сделать конспект
+    </button>
 
-  <!-- ТЕСТЫ -->
-  <section id="tests" class="page">
-    <h2>🧠 Тесты</h2>
+    <div class="result" id="summaryResult"></div>
 
-    <div class="card">
+  </div>
 
-      <input
-        id="testInput"
-        placeholder="Например: Древняя Русь"
-      >
-
-      <button class="big-button" onclick="createTest()">
-        🎯 Создать тест
-      </button>
-
-      <div id="testResult" class="result">
-        Здесь появится тест.
-      </div>
-
-    </div>
-  </section>
+</section>
 
 
-  <!-- КАРТИНКИ -->
-  <section id="image" class="page">
-    <h2>🎨 Генерация картинок</h2>
+<!-- TESTS -->
 
-    <div class="card">
+<section id="tests" class="page">
 
-      <textarea
-        id="imageInput"
-        placeholder="Например: средневековый замок на фоне гор, реалистично"
-      ></textarea>
+  <h2>🧠 Тесты</h2>
 
-      <button class="big-button" onclick="generateImage()">
-        🎨 Создать картинку
-      </button>
+  <div class="card">
 
-      <div id="imageResult" class="result">
-        Здесь появится результат.
-      </div>
+    <p>
+      Напиши школьную тему.
+    </p>
 
-    </div>
-  </section>
+    <input
+      type="text"
+      id="testInput"
+      placeholder="Например: Древняя Русь"
+    >
+
+    <button class="primary" id="testButton">
+      🎯 Создать тест
+    </button>
+
+    <div class="result" id="testResult"></div>
+
+  </div>
+
+</section>
 
 
-  <!-- ПРОФИЛЬ -->
-  <section id="profile" class="page">
-    <h2>👤 Профиль</h2>
+<!-- IMAGE -->
 
-    <div class="card">
-      <h3>Ushakov AI</h3>
-      <p>Твой школьный AI-помощник.</p>
+<section id="image" class="page">
 
-      <button class="big-button" onclick="showMessage('Профиль работает! ✅')">
-        Проверить кнопку
-      </button>
-    </div>
-  </section>
+  <h2>🎨 Картинка AI</h2>
+
+  <div class="card">
+
+    <p>
+      Опиши изображение, которое хочешь создать.
+    </p>
+
+    <textarea
+      id="imageInput"
+      placeholder="Например: средневековый замок на горе, реалистичный стиль..."
+    ></textarea>
+
+    <button class="primary" id="imageButton">
+      🎨 Создать картинку
+    </button>
+
+    <div class="result" id="imageResult"></div>
+
+    <img
+      id="generatedImage"
+      class="generated-image"
+      style="display:none"
+      alt="Созданное изображение"
+    >
+
+  </div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section id="profile" class="page">
+
+  <h2>👤 Профиль</h2>
+
+  <div class="card">
+
+    <h3>Ushakov AI</h3>
+
+    <p>
+      Твой школьный AI-помощник.
+    </p>
+
+    <button class="secondary" id="testInterfaceButton">
+      ✅ Проверить интерфейс
+    </button>
+
+  </div>
+
+</section>
 
 </main>
 
-<div id="status" class="status"></div>
+
+<div id="status"></div>
 
 
 <script>
 
-/* =========================
+const API_URL =
+  "https://ushakov-ai-api123.usakovstas653.workers.dev";
+
+
+/* ================================
    НАВИГАЦИЯ
-========================= */
+================================ */
 
-function showPage(pageId, button) {
+function openPage(pageId) {
 
-  // скрываем все страницы
-  var pages = document.querySelectorAll('.page');
-
-  pages.forEach(function(page) {
-    page.classList.remove('active');
+  document.querySelectorAll(".page").forEach(function(page) {
+    page.classList.remove("active");
   });
 
-  // показываем нужную
-  var page = document.getElementById(pageId);
+  const page = document.getElementById(pageId);
 
-  if (page) {
-    page.classList.add('active');
-  }
+  if (!page) return;
 
-  // меняем активную кнопку
-  var buttons = document.querySelectorAll('.nav button');
+  page.classList.add("active");
 
-  buttons.forEach(function(btn) {
-    btn.classList.remove('active');
+  document.querySelectorAll(".nav button").forEach(function(button) {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageId
+    );
   });
 
-  if (button) {
-    button.classList.add('active');
-  }
-
-  window.scrollTo(0, 0);
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 
-/* =========================
-   СООБЩЕНИЯ
-========================= */
+document.querySelectorAll(".nav button").forEach(function(button) {
 
-function showMessage(message) {
+  button.addEventListener("click", function() {
+    openPage(button.dataset.page);
+  });
 
-  var status = document.getElementById('status');
+});
+
+
+document.querySelectorAll("[data-go]").forEach(function(button) {
+
+  button.addEventListener("click", function() {
+    openPage(button.dataset.go);
+  });
+
+});
+
+
+/* ================================
+   STATUS
+================================ */
+
+let statusTimer;
+
+function showStatus(message) {
+
+  const status = document.getElementById("status");
 
   status.textContent = message;
-  status.classList.add('show');
+  status.classList.add("show");
 
-  setTimeout(function() {
-    status.classList.remove('show');
+  clearTimeout(statusTimer);
+
+  statusTimer = setTimeout(function() {
+    status.classList.remove("show");
   }, 2500);
 }
 
 
-/* =========================
-   ЧАТ
-========================= */
+/* ================================
+   RESULT
+================================ */
 
-function sendChat() {
+function showResult(element, text) {
 
-  var input = document.getElementById('chatInput');
-  var result = document.getElementById('chatResult');
+  element.textContent = text;
+  element.classList.add("show");
+}
 
-  if (!input.value.trim()) {
-    showMessage('Напиши вопрос сначала 👆');
-    return;
-  }
+function loading(element, text = "⏳ Думаю...") {
 
-  result.textContent =
-    'Кнопка работает ✅\n\n' +
-    'Вопрос: ' + input.value +
-    '\n\nПодключение AI добавим следующим шагом.';
+  element.textContent = text;
+  element.classList.add("show", "loading");
+}
 
-  showMessage('Кнопка чата работает ✅');
+function finishLoading(element, text) {
+
+  element.textContent = text;
+  element.classList.add("show");
+  element.classList.remove("loading");
 }
 
 
-/* =========================
-   ФОТО
-========================= */
+/* ================================
+   API
+================================ */
 
-function photoTest() {
+async function api(action, data = {}) {
 
-  var input = document.getElementById('photoInput');
-  var result = document.getElementById('photoResult');
+  const response = await fetch(API_URL, {
 
-  if (!input.files || !input.files.length) {
-    showMessage('Сначала выбери фотографию 📷');
-    return;
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      action,
+      ...data
+    })
+
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error(
+      "Сервер вернул неправильный ответ."
+    );
   }
 
-  result.textContent =
-    'Кнопка работает ✅\n\n' +
-    'Файл: ' + input.files[0].name;
+  if (!response.ok) {
 
-  showMessage('Фото выбрано ✅');
+    throw new Error(
+      result.error ||
+      "Ошибка сервера: " + response.status
+    );
+
+  }
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
 }
 
 
-/* =========================
-   КОНСПЕКТ
-========================= */
+/* ================================
+   CHAT
+================================ */
 
-function makeSummary() {
+document
+  .getElementById("chatButton")
+  .addEventListener("click", async function() {
 
-  var input = document.getElementById('summaryInput');
-  var result = document.getElementById('summaryResult');
+    const input =
+      document.getElementById("chatInput");
 
-  if (!input.value.trim()) {
-    showMessage('Вставь текст для конспекта 👆');
-    return;
-  }
+    const result =
+      document.getElementById("chatResult");
 
-  result.textContent =
-    'Кнопка работает ✅\n\n' +
-    'Текст принят.\n\n' +
-    'AI-конспект подключим после проверки интерфейса.';
+    const button = this;
 
-  showMessage('Конспект работает ✅');
+    const text = input.value.trim();
+
+    if (!text) {
+      showStatus("Напиши вопрос сначала 👆");
+      input.focus();
+      return;
+    }
+
+    button.disabled = true;
+
+    loading(result, "⏳ AI думает...");
+
+    try {
+
+      const data = await api("chat", {
+        message: text
+      });
+
+      const answer =
+        data.text ||
+        data.response ||
+        data.answer ||
+        "AI не вернул текст.";
+
+      finishLoading(result, answer);
+
+      showStatus("Готово ✅");
+
+    } catch (error) {
+
+      finishLoading(
+        result,
+        "❌ Ошибка:\n" + error.message
+      );
+
+      showStatus("Не удалось получить ответ");
+
+    } finally {
+
+      button.disabled = false;
+
+    }
+
+  });
+
+
+/* ================================
+   PHOTO
+================================ */
+
+document
+  .getElementById("photoButton")
+  .addEventListener("click", async function() {
+
+    const input =
+      document.getElementById("photoInput");
+
+    const result =
+      document.getElementById("photoResult");
+
+    const button = this;
+
+    if (!input.files || !input.files[0]) {
+      showStatus("Сначала выбери фотографию 📷");
+      return;
+    }
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith("image/")) {
+      showStatus("Нужен именно файл изображения");
+      return;
+    }
+
+    button.disabled = true;
+
+    loading(result, "⏳ Читаю задание с фотографии...");
+
+    try {
+
+      const base64 = await fileToBase64(file);
+
+      const data = await api("photo", {
+        image: base64,
+        mimeType: file.type
+      });
+
+      const answer =
+        data.text ||
+        data.response ||
+        data.answer ||
+        "Не удалось получить решение.";
+
+      finishLoading(result, answer);
+
+      showStatus("Фото обработано ✅");
+
+    } catch (error) {
+
+      finishLoading(
+        result,
+        "❌ Ошибка:\n" + error.message
+      );
+
+      showStatus("Не удалось обработать фото");
+
+    } finally {
+
+      button.disabled = false;
+
+    }
+
+  });
+
+
+function fileToBase64(file) {
+
+  return new Promise(function(resolve, reject) {
+
+    const reader = new FileReader();
+
+    reader.onload = function() {
+
+      const result = reader.result;
+
+      const comma =
+        result.indexOf(",");
+
+      resolve(
+        comma >= 0
+          ? result.substring(comma + 1)
+          : result
+      );
+
+    };
+
+    reader.onerror = function() {
+      reject(
+        new Error("Не удалось прочитать файл.")
+      );
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
 }
 
 
-/* =========================
-   ТЕСТ
-========================= */
+/* ================================
+   SUMMARY
+================================ */
 
-function createTest() {
+document
+  .getElementById("summaryButton")
+  .addEventListener("click", async function() {
 
-  var input = document.getElementById('testInput');
-  var result = document.getElementById('testResult');
+    const input =
+      document.getElementById("summaryInput");
 
-  if (!input.value.trim()) {
-    showMessage('Напиши тему теста 👆');
-    return;
-  }
+    const result =
+      document.getElementById("summaryResult");
 
-  result.textContent =
-    'Кнопка работает ✅\n\n' +
-    'Тема: ' + input.value +
-    '\n\nГенератор тестов подключим после проверки кнопок.';
+    const button = this;
 
-  showMessage('Тест работает ✅');
-}
+    const text = input.value.trim();
+
+    if (!text) {
+      showStatus("Вставь текст урока 👆");
+      input.focus();
+      return;
+    }
+
+    button.disabled = true;
+
+    loading(result, "⏳ Делаю конспект...");
+
+    try {
+
+      const data = await api("summary", {
+        text
+      });
+
+      const answer =
+        data.text ||
+        data.response ||
+        data.answer ||
+        "Конспект не получен.";
+
+      finishLoading(result, answer);
+
+      showStatus("Конспект готов ✅");
+
+    } catch (error) {
+
+      finishLoading(
+        result,
+        "❌ Ошибка:\n" + error.message
+      );
+
+      showStatus("Ошибка");
+
+    } finally {
+
+      button.disabled = false;
+
+    }
+
+  });
 
 
-/* =========================
-   КАРТИНКА
-========================= */
+/* ================================
+   TEST
+================================ */
 
-function generateImage() {
+document
+  .getElementById("testButton")
+  .addEventListener("click", async function() {
 
-  var input = document.getElementById('imageInput');
-  var result = document.getElementById('imageResult');
+    const input =
+      document.getElementById("testInput");
 
-  if (!input.value.trim()) {
-    showMessage('Напиши описание картинки 👆');
-    return;
-  }
+    const result =
+      document.getElementById("testResult");
 
-  result.textContent =
-    'Кнопка работает ✅\n\n' +
-    'Запрос: ' + input.value +
-    '\n\nГенерацию подключим следующим шагом.';
+    const button = this;
 
-  showMessage('Кнопка работает ✅');
-}
+    const topic = input.value.trim();
+
+    if (!topic) {
+      showStatus("Напиши тему теста 👆");
+      input.focus();
+      return;
+    }
+
+    button.disabled = true;
+
+    loading(result, "⏳ Создаю тест...");
+
+    try {
+
+      const data = await api("test", {
+        topic
+      });
+
+      const answer =
+        data.text ||
+        data.response ||
+        data.answer ||
+        "Тест не получен.";
+
+      finishLoading(result, answer);
+
+      showStatus("Тест готов ✅");
+
+    } catch (error) {
+
+      finishLoading(
+        result,
+        "❌ Ошибка:\n" + error.message
+      );
+
+      showStatus("Ошибка");
+
+    } finally {
+
+      button.disabled = false;
+
+    }
+
+  });
 
 
-/* =========================
-   ПРОВЕРКА
-========================= */
+/* ================================
+   IMAGE GENERATION
+================================ */
 
-document.addEventListener('DOMContentLoaded', function() {
+document
+  .getElementById("imageButton")
+  .addEventListener("click", async function() {
 
-  showMessage('Ushakov AI загружен ✅');
+    const input =
+      document.getElementById("imageInput");
 
-});
+    const result =
+      document.getElementById("imageResult");
 
-</script>
+    const image =
+      document.getElementById("generatedImage");
 
-</body>
-</html>
+    const button = this;
+
+    const prompt = input.value.trim();
+
+    if (!prompt) {
+      showStatus("Опиши картинку 👆");
+      input.focus();
+      return;
+    }
+
+    button.disabled = true;
+
+    image.style.display = "none";
+
+    loading(
+      result,
+      "⏳ Создаю изображение..."
+    );
+
+    try {
+
+      const data = await api("image", {
+        prompt
+      });
+
+      let imageData =
+        data.image ||
+        data.imageData ||
+        data.data ||
+        null;
+
+      let mime =
+        data.mimeType ||
+        "image/png";
+
+      if (
+        imageData &&
+        typeof imageData === "string"
+      ) {
+
+        if (imageData.startsWith("data:")) {
+
+          image.src = imageData;
+
+        } else {
+
+          image.src =
+            "data:" + mime +
+            ";base64," +
+            imageData;
+
+        }
+
+        image.style.display = "block";
+
+        finishLoading(
+          result,
+          "Готово 🎨"
+        );
+
+        showStatus("Картинка создана ✅");
+
+      } else {
+
+        throw new Error(
+          "Сервер не вернул изображение."
+        );
+
+      }
+
+    } catch (error) {
+
+      finishLoading(
+        result,
+        "❌ Ошибка:\n" + error.message
+      );
+
+      showStatus("Не удалось создать картинку");
+
+    } finally {
+
+      button.dis
